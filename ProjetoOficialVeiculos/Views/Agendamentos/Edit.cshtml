@@ -1,0 +1,88 @@
+﻿@model ProjetoOficialVeiculos.Models.Agendamento
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Agendamento</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="id" />
+            <div class="form-group">
+                <label asp-for="caminhaoID" class="control-label"></label>
+                <select asp-for="caminhaoID" class="form-control" asp-items="ViewBag.caminhaoID"></select>
+                <span asp-validation-for="caminhaoID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="empresaID" class="control-label"></label>
+                <select asp-for="empresaID" class="form-control" asp-items="ViewBag.empresaID"></select>
+                <span asp-validation-for="empresaID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaterialID" class="control-label"></label>
+                <select asp-for="MaterialID" class="form-control" asp-items="ViewBag.MaterialID"></select>
+                <span asp-validation-for="MaterialID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DataAgendamento" class="control-label"></label>
+                <input asp-for="DataAgendamento" class="form-control" />
+                <span asp-validation-for="DataAgendamento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PesoCarregado" class="control-label"></label>
+                <input asp-for="PesoCarregado" class="form-control" />
+                <span asp-validation-for="PesoCarregado" class="text-danger"></span>
+            </div>
+
+
+
+
+
+            <div class="form-group">
+                <label asp-for="Status" class="control-label">Status</label>
+                <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<ControleOficialVeiculos.Enum.StatusAgendamento>()">
+                    <option value="">Selecione o Status</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DataConclusao" class="control-label"></label>
+                <input asp-for="DataConclusao" class="form-control" />
+                <span asp-validation-for="DataConclusao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OrdemFila" class="control-label"></label>
+                <input asp-for="OrdemFila" class="form-control" />
+                <span asp-validation-for="OrdemFila" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MotoristaID" class="control-label"></label>
+                <select asp-for="MotoristaID" class="form-control" asp-items="ViewBag.MotoristaID"></select>
+                <span asp-validation-for="MotoristaID" class="text-danger"></span>
+            </div>
+          
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+   
+}

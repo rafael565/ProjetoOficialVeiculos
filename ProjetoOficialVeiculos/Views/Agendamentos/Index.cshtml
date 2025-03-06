@@ -1,0 +1,103 @@
+﻿@model IEnumerable<ProjetoOficialVeiculos.Models.Agendamento>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <div>
+        <a class="btn btn-success mx-2" asp-controller="Agendamentos" asp-action="Exportar">
+            <i class="bi bi-file-earmark-plus"></i> Exportar
+        </a>
+    </div>
+
+    <form method="get" asp-action="Index">
+        <label>Data Agendamento:</label>
+        <input type="date" name="dataAgendamento" value="@Context.Request.Query["dataAgendamento"]" />
+
+        <select name="status" class="form-control">
+            <option value="">Todos</option>
+            <option value="Pendente">Pendente</option>
+            <option value="Concluido">Concluido</option>
+            <option value="Cancelado">Cancelado</option>
+        </select>
+
+        <button type="submit">Filtrar</button>
+    </form>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.caminhao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.empresa)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.material)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataAgendamento)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PesoCarregado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataConclusao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrdemFila)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.motorista)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.caminhao.placa)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.empresa.cnpj)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.material.nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataAgendamento)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PesoCarregado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataConclusao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrdemFila)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.motorista.nome)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
