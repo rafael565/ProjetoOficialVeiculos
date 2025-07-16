@@ -1,40 +1,53 @@
 ﻿@model ProjetoOficialVeiculos.Models.Material
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Material";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1 class="text-center text-black mb-4">Editar Material</h1>
 
-<h4>Material</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="id" />
-            <div class="form-group">
-                <label asp-for="nome" class="control-label"></label>
-                <input asp-for="nome" class="form-control" />
-                <span asp-validation-for="nome" class="text-danger"></span>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-dark">
+            <div class="card-header text-center bg-dark text-white">
+                <h4 class="mb-0">Editar Material</h4>
             </div>
-            <div class="form-group">
-                <label asp-for="quantidade" class="control-label"></label>
-                <input asp-for="quantidade" class="form-control" />
-                <span asp-validation-for="quantidade" class="text-danger"></span>
+            <div class="card-body bg-dark text-white">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <input type="hidden" asp-for="id" />
+
+                    <!-- Nome -->
+                    <div class="form-group mb-3">
+                        <label asp-for="nome" class="form-label">Nome do Material</label>
+                        <input asp-for="nome" class="form-control form-control-lg" placeholder="Digite o nome do material" style="height: 60px; padding: 10px; width: 100%; box-sizing: border-box;" />
+                        <span asp-validation-for="nome" class="text-danger"></span>
+                    </div>
+
+                    <!-- Quantidade -->
+                    <div class="form-group mb-3">
+                        <label asp-for="quantidade" class="form-label">Quantidade</label>
+                        <input asp-for="quantidade" class="form-control form-control-lg" placeholder="Digite a quantidade" style="height: 60px; padding: 10px; width: 100%; box-sizing: border-box;" />
+                        <span asp-validation-for="quantidade" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; height: 60px;">Salvar</button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="text-center mt-4">
+    <a asp-action="Index" class="btn btn-link text-white">Voltar para a lista</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

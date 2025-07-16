@@ -27,15 +27,15 @@ namespace ProjetoOficialVeiculos.Models
         [Display(Name = "Data do Agendamento: ")]
         public DateTime DataAgendamento { get; set; }
 
-        [Required]
+        
         [Display(Name = "Peso Carregado (kg): ")]
-        public string PesoCarregado { get; set; }
+        public string? PesoCarregado { get; set; }
 
 
         [Display(Name = "Status do Agendamento: ")]
         public StatusAgendamento Status { get; set; } = StatusAgendamento.Pendente;
 
-        [Display(Name = "Data de Conclusão: ")]
+        [Display(Name = "Data de Carregamento: ")]
         public DateTime DataConclusao { get; set; }
 
         [Display(Name = "Ordem na Fila")]
@@ -43,7 +43,7 @@ namespace ProjetoOficialVeiculos.Models
 
         public Motorista motorista { get; set; }
         [Display(Name = "Motoristas: ")]
-        public int MotoristaID { get; set; }
+        public int? MotoristaID { get; set; }
 
 
 

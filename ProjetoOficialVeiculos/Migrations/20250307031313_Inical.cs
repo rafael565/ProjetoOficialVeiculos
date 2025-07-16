@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProjetoOficialVeiculos.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial : Migration
+    public partial class Inical : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -81,7 +81,7 @@ namespace ProjetoOficialVeiculos.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     DataConclusao = table.Column<DateTime>(type: "datetime2", nullable: false),
                     OrdemFila = table.Column<int>(type: "int", nullable: false),
-                    MotoristaID = table.Column<int>(type: "int", nullable: false)
+                    MotoristaID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,8 +108,7 @@ namespace ProjetoOficialVeiculos.Migrations
                         name: "FK_Agendamentos_Motoristas_MotoristaID",
                         column: x => x.MotoristaID,
                         principalTable: "Motoristas",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateIndex(

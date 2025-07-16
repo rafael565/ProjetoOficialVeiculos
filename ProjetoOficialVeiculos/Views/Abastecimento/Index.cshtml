@@ -5,80 +5,184 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.caminhao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.empresa)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.material)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataAgendamento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PesoCarregado)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataConclusao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrdemFila)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.motorista)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.caminhao.placa)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.empresa.cnpj)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.material.nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataAgendamento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PesoCarregado)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataConclusao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrdemFila)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.motorista.nome)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
-            </td>
-        </tr>
+@functions {
+    public string GetBadgeClass(ControleOficialVeiculos.Enum.StatusAgendamento status)
+    {
+        return status switch
+        {
+            ControleOficialVeiculos.Enum.StatusAgendamento.Concluido => "bg-success",
+            ControleOficialVeiculos.Enum.StatusAgendamento.Cancelado => "bg-danger",
+            ControleOficialVeiculos.Enum.StatusAgendamento.Carregamento => "bg-warning text-dark",
+            ControleOficialVeiculos.Enum.StatusAgendamento.Faturamento => "bg-info text-dark",
+            _ => "bg-secondary"
+        };
+    }
 }
-    </tbody>
-</table>
+
+<div class="mb-3">
+    <a asp-controller="Home" asp-action="Index"
+       class="btn btn-outline-secondary px-4 py-2 shadow-sm rounded-pill transition"
+       style="display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fas fa-arrow-left"></i>
+        <span>Voltar para Início</span>
+    </a>
+</div>
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center text-dark mb-4">📅 Lista de Abastecimento</h2>
+        <hr />
+
+        <!-- Filtro de Pesquisa -->
+        <form method="get" class="mb-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="dataAgendamento" class="form-label">Data Agendamento</label>
+                    <input type="date" id="dataAgendamento" name="dataAgendamento" class="form-control form-control-sm"
+                           value="@Context.Request.Query["dataAgendamento"]" />
+                </div>
+
+                <div class="col-md-4">
+                    <label for="dataConclusao" class="form-label">Data Carregamento</label>
+                    <input type="date" id="dataConclusao" name="dataConclusao" class="form-control form-control-sm"
+                           value="@Context.Request.Query["dataConclusao"]" />
+                </div>
+
+                <div class="col-md-4">
+                    <label for="caminhaoID" class="form-label">Caminhão (placa)</label>
+                    <input type="text" id="caminhaoID" name="caminhaoID" class="form-control form-control-sm"
+                           value="@Context.Request.Query["caminhaoID"]" placeholder="Digite a placa do caminhão" />
+                </div>
+                <div class="col-auto">
+                    <div class="form-group">
+                        <label for="status" class="form-label mb-1">Status:</label>
+                        <select name="status" class="form-control form-control-sm">
+                            <option value="">Todos</option>
+                            <option value="Pendente">Aguardando Liberação</option>
+                            <option value="Concluido">Concluído</option>
+                            <option value="Cancelado">Cancelado</option>
+                            <option value="Carregamento">Em Carregamento</option>
+                        </select>
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-sm btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Botão para página de agendamentos concluídos -->
+        <div class="mb-4">
+            <a asp-controller="Agendamentos" asp-action="List" class="btn btn-success">
+                <i class="bi bi-calendar-check"></i> Lista Agendamentos
+            </a>
+        </div>
+
+        <div class="mb-4">
+            <a asp-controller="Abastecimento" asp-action="listAbastecimento" class="btn btn-success">
+                <i class="bi bi-calendar-check"></i> Lista Carregamento
+            </a>
+        </div>
+
+        <hr />
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.caminhao)</th>
+                        <th>@Html.DisplayNameFor(model => model.empresa)</th>
+                        <th>@Html.DisplayNameFor(model => model.material)</th>
+                        <th>@Html.DisplayNameFor(model => model.DataAgendamento)</th>
+                        <th>@Html.DisplayNameFor(model => model.PesoCarregado)</th>
+                        <th>@Html.DisplayNameFor(model => model.Status)</th>
+                        <th>@Html.DisplayNameFor(model => model.DataConclusao)</th>
+                        <th>@Html.DisplayNameFor(model => model.OrdemFila)</th>
+                        <th>@Html.DisplayNameFor(model => model.motorista)</th>
+                        <th>Ações</th>
+                        <th>Tempo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.caminhao.placa)</td>
+                            <td>@Html.DisplayFor(modelItem => item.empresa.nome)</td>
+                            <td>@Html.DisplayFor(modelItem => item.material.nome)</td>
+                            <td>@Html.DisplayFor(modelItem => item.DataAgendamento)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PesoCarregado)</td>
+                            <td>
+                                <span class="badge @GetBadgeClass(item.Status)">
+                                    @Html.DisplayFor(modelItem => item.Status)
+                                </span>
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.DataConclusao)</td>
+                            <td>@Html.DisplayFor(modelItem => item.OrdemFila)</td>
+                            <td>@Html.DisplayFor(modelItem => item.motorista.nome)</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.id" class="btn btn-primary btn-sm">🛠 Abastecer</a>
+                            </td>
+                            <td>
+                                <!-- Aqui é onde o botão "Chamar" será exibido se a hora agendada já passou -->
+                                <span class="tempo-restante"
+                                      data-conclusao="@item.DataConclusao.ToString("o")"
+                                      data-id="@item.id">
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Estilo para tabela -->
+<style>
+    thead.thead-dark th {
+        background-color: #343a40;
+        color: white;
+    }
+</style>
+
+<!-- Script para atualizar o tempo restante ou exibir botão "Chamar" -->
+<script>
+    function atualizarTemposRestantes() {
+        const elementos = document.querySelectorAll('.tempo-restante');
+        elementos.forEach(el => {
+            const agendamentoStr = el.getAttribute('data-conclusao');
+            if (!agendamentoStr) return;
+
+            const agendamento = new Date(agendamentoStr);
+            const agora = new Date();
+            const diff = agendamento - agora;
+            const id = el.getAttribute('data-id');
+
+            if (diff > 0) {
+                const horas = Math.floor(diff / (1000 * 60 * 60));
+                const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                el.innerHTML = `<span style="color:green">${horas}h ${minutos}min restantes</span>`;
+            } else {
+                el.innerHTML = `
+                    <form method="get" action="/Abastecimento/ChamarParaBalanca">
+                        <input type="hidden" name="id" value="${id}" />
+                        <button style="background-color: #f0ad4e; color: white; border: none; padding: 7px 13px;display: flex; flex-direction: column; align-items: center;border-radius: 5px; font-family: sans-serif; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <span style="font-size: 1.0em; line-height: 1;">📣</span>
+                        <span style="margin-top: 2px; font-size: 0.75em;">Chamar</span>
+                        </button>
+                    </form>
+                `;
+            }
+        });
+    }
+
+    setInterval(atualizarTemposRestantes, 1000);
+    window.addEventListener('DOMContentLoaded', atualizarTemposRestantes);
+</script>
+

@@ -1,35 +1,47 @@
 ﻿@model ProjetoOficialVeiculos.Models.Caminhao
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Caminhão";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1 class="text-center mb-4">Editar Caminhão</h1>
 
-<h4>Caminhao</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="id" />
-            <div class="form-group">
-                <label asp-for="placa" class="control-label"></label>
-                <input asp-for="placa" class="form-control" />
-                <span asp-validation-for="placa" class="text-danger"></span>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header text-center bg-warning text-white">
+                    <h4 class="mb-0">Editar Dados do Caminhão</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Hidden field for ID -->
+                        <input type="hidden" asp-for="id" />
+
+                        <div class="mb-3">
+                            <label asp-for="placa" class="form-label">Placa do Caminhão</label>
+                            <input asp-for="placa" class="form-control" />
+                            <span asp-validation-for="placa" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <input type="submit" value="Salvar" class="btn btn-warning btn-lg" />
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <a asp-action="Index" class="btn btn-link text-decoration-none">
+                        <i class="fas fa-arrow-left"></i> Voltar à Lista
+                    </a>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 }

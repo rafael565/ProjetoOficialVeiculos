@@ -12,9 +12,12 @@ using ProjetoOficialVeiculos.Models;
 using System.Drawing;
 using System.Text;
 using System.Data;
+using System.Diagnostics.Metrics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProjetoOficialVeiculos.Controllers
 {
+    [Authorize]
     public class AgendamentosController : Controller
     {
         private readonly Contexto _context;
@@ -22,7 +25,6 @@ namespace ProjetoOficialVeiculos.Controllers
         public AgendamentosController(Contexto context)
         {
             _context = context;
-
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
 
@@ -30,7 +32,7 @@ namespace ProjetoOficialVeiculos.Controllers
         private void PopulateDropDowns(Agendamento agendamento = null)
         {
             ViewData["caminhaoID"] = new SelectList(_context.Caminhoes, "id", "placa", agendamento?.caminhaoID);
-            ViewData["empresaID"] = new SelectList(_context.Empresas, "id", "cnpj", agendamento?.empresaID);
+            ViewData["empresaID"] = new SelectList(_context.Empresas, "id", "nome", agendamento?.empresaID);
             ViewData["MaterialID"] = new SelectList(_context.Materiais, "id", "nome", agendamento?.MaterialID);
             ViewData["MotoristaID"] = new SelectList(_context.Motoristas, "id", "nome", agendamento?.MotoristaID);
         }
@@ -122,7 +124,7 @@ namespace ProjetoOficialVeiculos.Controllers
         }
 
         // GET: Agendamentos (com filtros de data e status)
-        public async Task<IActionResult> Index(DateTime? dataAgendamento, string status)
+        public async Task<IActionResult> Index(DateTime? dataAgendamento, DateTime? dataConclusao, string status)
         {
             var contexto = _context.Agendamentos
                 .Include(a => a.caminhao)
@@ -138,23 +140,29 @@ namespace ProjetoOficialVeiculos.Controllers
                 contexto = contexto.Where(a => a.DataAgendamento.Date == dataAgendamento.Value.Date);
             }
 
+            if (dataConclusao.HasValue)
+            {
+                contexto = contexto.Where(a => a.DataConclusao.Date == dataConclusao.Value.Date);
+            }
+
+
+
             // Filtro por status, se fornecido
-            if (!string.IsNullOrEmpty(status) && System.Enum.TryParse<StatusAgendamento>(status, true, out var statusEnum))
+            if (!string.IsNullOrEmpty(status) && Enum.TryParse<StatusAgendamento>(status, true, out var statusEnum))
             {
                 contexto = contexto.Where(a => a.Status == statusEnum);
             }
 
-            ViewBag.StatusList = new SelectList(new List<string> { "Pendente", "Concluido", "Cancelado" });
+            ViewBag.StatusList = new SelectList(new List<string> { "Aguardando Liberação", "Concluido", "Cancelado" , "Em Carregamento",  });
 
             return View(await contexto.ToListAsync());
         }
-
+        
         // GET: Agendamentos/Create
         public IActionResult Create()
         {
-            var agendamento = new Agendamento();
             PopulateDropDowns();
-            return View(agendamento);
+            return View(new Agendamento());
         }
 
         // POST: Agendamentos/Create
@@ -163,7 +171,23 @@ namespace ProjetoOficialVeiculos.Controllers
         public async Task<IActionResult> Create([Bind("id,caminhaoID,empresaID,MaterialID,DataAgendamento,PesoCarregado,Status,DataConclusao,OrdemFila, MotoristaID")] Agendamento agendamento)
         {
             if (ModelState.IsValid)
+
             {
+                if (agendamento.caminhaoID == 0)  // Se o ID do caminhão for zero (não selecionado)
+                {
+                    // Redireciona para a tela de criação do caminhão
+                    return RedirectToAction("Create", "Caminhoes");
+                }
+                if (agendamento.PesoCarregado == "-1")
+                {
+                    agendamento.PesoCarregado = null; // Define como nulo se for -1
+                }
+
+                if (agendamento.MotoristaID == -1)
+                {
+                    agendamento.MotoristaID = null; // No banco, ele será tratado como null
+                }
+
                 // Verifica a maior ordem existente ou define a ordem inicial como 1
                 int ordemMaxima = _context.Agendamentos.Any() ? _context.Agendamentos.Max(a => a.OrdemFila) : 0;
                 agendamento.OrdemFila = ordemMaxima + 1;
@@ -258,6 +282,28 @@ namespace ProjetoOficialVeiculos.Controllers
             return View(agendamento);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddCaminhao(string placa)
+        {
+            if (string.IsNullOrWhiteSpace(placa))
+            {
+                return BadRequest("Placa inválida.");
+            }
+
+            // Cria um novo objeto Caminhao e salva no banco de dados
+            var caminhao = new Caminhao
+            {
+                placa = placa
+            };
+
+            _context.Caminhoes.Add(caminhao);
+            await _context.SaveChangesAsync();
+
+            // Retorna o novo caminhão com seu ID
+            return Json(new { id = caminhao.id, placa = caminhao.placa });
+        }
+
+
         // GET: Agendamentos/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -300,5 +346,122 @@ namespace ProjetoOficialVeiculos.Controllers
         {
             return _context.Agendamentos.Any(e => e.id == id);
         }
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var agendamento = await _context.Agendamentos
+                .Include(a => a.caminhao)       
+                .Include(a => a.empresa)       
+                .Include(a => a.material)      
+                .Include(a => a.motorista)      
+                .FirstOrDefaultAsync(m => m.id == id);
+
+            if (agendamento == null)
+            {
+                return NotFound();
+            }
+
+            return View(agendamento);
+        }
+
+
+        public async Task<IActionResult> List(DateTime? dataAgendamento, string status)
+        {
+            var contexto = _context.Agendamentos
+                .Include(a => a.caminhao)
+                .Include(a => a.empresa)
+                .Include(a => a.material)
+                .Include(a => a.motorista)
+                .OrderBy(a => a.DataAgendamento)
+                .AsQueryable();
+
+            // Filtro por data, se fornecida
+            if (dataAgendamento.HasValue)
+            {
+                contexto = contexto.Where(a => a.DataAgendamento.Date == dataAgendamento.Value.Date);
+            }
+
+            // Filtro por status, se fornecido
+            if (!string.IsNullOrEmpty(status) && Enum.TryParse<StatusAgendamento>(status, true, out var statusEnum))
+            {
+                contexto = contexto.Where(a => a.Status == statusEnum);
+            }
+
+            ViewBag.StatusList = new SelectList(new List<string> { "Aguardando Liberação", "Concluido", "Cancelado" , "Em Carregamento", });
+
+            return View(await contexto.ToListAsync());
+        }
+
+        public IActionResult Dashboard(List<int> meses, int? ano)
+        {
+            var anoAtual = ano ?? DateTime.Now.Year;
+
+            // Se nenhum mês for selecionado, considera todos os meses (1 a 12)
+            if (meses == null || meses.Count == 0)
+            {
+                meses = Enumerable.Range(1, 12).ToList();
+            }
+
+            // Filtra os agendamentos com base nos meses selecionados e no ano
+            var agendamentosMes = _context.Agendamentos
+                .Include(a => a.empresa)
+                .Where(a => meses.Contains(a.DataAgendamento.Month) && a.DataAgendamento.Year == anoAtual)
+                .ToList();
+
+            // Verificar se o filtro trouxe algum dado
+            if (!agendamentosMes.Any())
+            {
+                ViewBag.Message = "Nenhum agendamento encontrado para o filtro selecionado.";
+            }
+
+            // Prepara os dados para os gráficos
+            ViewBag.StatusData = new
+            {
+                total = agendamentosMes.Count,
+                pendente = agendamentosMes.Count(a => a.Status == StatusAgendamento.Pendente),
+                concluido = agendamentosMes.Count(a => a.Status == StatusAgendamento.Concluido),
+                cancelado = agendamentosMes.Count(a => a.Status == StatusAgendamento.Cancelado),
+                carregamento = agendamentosMes.Count(a => a.Status == StatusAgendamento.Carregamento),
+                empresasData = agendamentosMes
+                    .GroupBy(a => a.empresa.nome)
+                    .OrderBy(g => g.Key)
+                    .Select(g => g.Count())
+                    .ToArray(),
+                empresasLabels = agendamentosMes
+                    .GroupBy(a => a.empresa.nome)
+                    .OrderBy(g => g.Key)
+                    .Select(g => g.Key)
+                    .ToArray(),
+                porDia = agendamentosMes
+                    .GroupBy(a => a.DataAgendamento.Day)
+                    .OrderBy(g => g.Key)
+                    .Select(g => g.Count())
+                    .ToArray()
+            };
+
+            // Empresas agrupadas para gráfico de barras
+            ViewBag.Empresas = agendamentosMes
+                .GroupBy(a => a.empresa.nome)
+                .OrderBy(g => g.Key)
+                .Select(g => g.Key)
+                .ToList();
+
+            // Passa o ano e os meses selecionados para a View
+            ViewBag.Ano = anoAtual;
+            ViewBag.Meses = meses;
+
+            // Exemplo básico: você pode adaptar essa lógica para armazenar a preferência do modo escuro no banco/cookie/localstorage
+            ViewBag.IsDarkMode = false;
+
+            return View();
+        }
+
+
+
     }
+
 }

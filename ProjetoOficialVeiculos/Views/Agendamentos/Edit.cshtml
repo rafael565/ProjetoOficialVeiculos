@@ -4,85 +4,97 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<div class="container mt-4">
+    <h1 class="text-center">Editar Agendamento</h1>
+    <h4 class="text-center mb-4">Ajuste os detalhes do agendamento</h4>
+    <hr />
 
-<h4>Agendamento</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="id" />
-            <div class="form-group">
-                <label asp-for="caminhaoID" class="control-label"></label>
-                <select asp-for="caminhaoID" class="form-control" asp-items="ViewBag.caminhaoID"></select>
-                <span asp-validation-for="caminhaoID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="empresaID" class="control-label"></label>
-                <select asp-for="empresaID" class="form-control" asp-items="ViewBag.empresaID"></select>
-                <span asp-validation-for="empresaID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaterialID" class="control-label"></label>
-                <select asp-for="MaterialID" class="form-control" asp-items="ViewBag.MaterialID"></select>
-                <span asp-validation-for="MaterialID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DataAgendamento" class="control-label"></label>
-                <input asp-for="DataAgendamento" class="form-control" />
-                <span asp-validation-for="DataAgendamento" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PesoCarregado" class="control-label"></label>
-                <input asp-for="PesoCarregado" class="form-control" />
-                <span asp-validation-for="PesoCarregado" class="text-danger"></span>
-            </div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="id" />
 
+                <!-- Campo Caminhão -->
+                <div class="form-group mb-3">
+                    <label asp-for="caminhaoID" class="control-label">Caminhão</label>
+                    <select asp-for="caminhaoID" class="form-control" asp-items="ViewBag.caminhaoID"></select>
+                    <span asp-validation-for="caminhaoID" class="text-danger"></span>
+                </div>
 
+                <!-- Campo Empresa -->
+                <div class="form-group mb-3">
+                    <label asp-for="empresaID" class="control-label">Empresa</label>
+                    <select asp-for="empresaID" class="form-control" asp-items="ViewBag.empresaID"></select>
+                    <span asp-validation-for="empresaID" class="text-danger"></span>
+                </div>
 
+                <!-- Campo Material -->
+                <div class="form-group mb-3">
+                    <label asp-for="MaterialID" class="control-label">Material</label>
+                    <select asp-for="MaterialID" class="form-control" asp-items="ViewBag.MaterialID"></select>
+                    <span asp-validation-for="MaterialID" class="text-danger"></span>
+                </div>
 
+                <!-- Campo Data Agendamento -->
+                <div class="form-group mb-3">
+                    <label asp-for="DataAgendamento" class="control-label">Data do Agendamento</label>
+                    <input asp-for="DataAgendamento" class="form-control" />
+                    <span asp-validation-for="DataAgendamento" class="text-danger"></span>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="Status" class="control-label">Status</label>
-                <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<ControleOficialVeiculos.Enum.StatusAgendamento>()">
-                    <option value="">Selecione o Status</option>
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
+                <!-- Campo Peso Carregado -->
+                <div class="form-group mb-3">
+                    <label asp-for="PesoCarregado" class="control-label">Peso Carregado (kg)</label>
+                    <input asp-for="PesoCarregado" class="form-control" />
+                    <span asp-validation-for="PesoCarregado" class="text-danger"></span>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="DataConclusao" class="control-label"></label>
-                <input asp-for="DataConclusao" class="form-control" />
-                <span asp-validation-for="DataConclusao" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OrdemFila" class="control-label"></label>
-                <input asp-for="OrdemFila" class="form-control" />
-                <span asp-validation-for="OrdemFila" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MotoristaID" class="control-label"></label>
-                <select asp-for="MotoristaID" class="form-control" asp-items="ViewBag.MotoristaID"></select>
-                <span asp-validation-for="MotoristaID" class="text-danger"></span>
-            </div>
-          
+                <!-- Campo Status -->
+                <div class="form-group mb-3">
+                    <label asp-for="Status" class="control-label">Status</label>
+                    <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<ControleOficialVeiculos.Enum.StatusAgendamento>()">
+                        <option value="">Selecione o Status</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
 
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+                <!-- Campo Data Conclusão -->
+                <div class="form-group mb-3">
+                    <label asp-for="DataConclusao" class="control-label">Data de Conclusão</label>
+                    <input asp-for="DataConclusao" class="form-control" />
+                    <span asp-validation-for="DataConclusao" class="text-danger"></span>
+                </div>
+
+                <!-- Campo Ordem na Fila -->
+                <div class="form-group mb-3">
+                    <label asp-for="OrdemFila" class="control-label">Ordem na Fila</label>
+                    <input asp-for="OrdemFila" class="form-control" />
+                    <span asp-validation-for="OrdemFila" class="text-danger"></span>
+                </div>
+
+                <!-- Campo Motorista -->
+                <div class="form-group mb-3">
+                    <label asp-for="MotoristaID" class="control-label">Motorista</label>
+                    <select asp-for="MotoristaID" class="form-control" asp-items="ViewBag.MotoristaID"></select>
+                    <span asp-validation-for="MotoristaID" class="text-danger"></span>
+                </div>
+
+                <!-- Botão de Submit -->
+                <div class="form-group text-center mb-3">
+                    <input type="submit" value="Salvar" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <div class="text-center mt-3">
+        <a asp-action="Index" class="btn btn-secondary">Voltar para a Lista</a>
+    </div>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
-   
 }

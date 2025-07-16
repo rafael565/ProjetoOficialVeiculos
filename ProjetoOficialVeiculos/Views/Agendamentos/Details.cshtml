@@ -1,73 +1,51 @@
 ﻿@model ProjetoOficialVeiculos.Models.Agendamento
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Agendamento";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow rounded p-4">
+                <h2 class="card-title text-center mb-4">Detalhes do Agendamento</h2>
+                <hr />
 
-<div>
-    <h4>Agendamento</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.caminhao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.caminhao.placa)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.empresa)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.empresa.cnpj)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.material)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.material.nome)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DataAgendamento)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataAgendamento)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PesoCarregado)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PesoCarregado)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DataConclusao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataConclusao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrdemFila)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrdemFila)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.motorista)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.motorista.nome)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+                <dl class="row">
+                    <dt class="col-sm-4 fw-bold">Caminhão</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.caminhao.placa)</dd>
+
+                    <dt class="col-sm-4 fw-bold">Empresa</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.empresa.cnpj)</dd>
+
+                    <dt class="col-sm-4 fw-bold">Material</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.material.nome)</dd>
+
+                    <dt class="col-sm-4 fw-bold">Data do Agendamento</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.DataAgendamento)</dd>
+
+                    <dt class="col-sm-4 fw-bold">Peso Carregado</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.PesoCarregado)</dd>
+
+                    <dt class="col-sm-4 fw-bold">Status</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Status)</dd>
+
+                    <dt class="col-sm-4 fw-bold">Data de Conclusão</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.DataConclusao)</dd>
+
+                    <dt class="col-sm-4 fw-bold">Ordem na Fila</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.OrdemFila)</dd>
+
+                    <dt class="col-sm-4 fw-bold">Motorista</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.motorista.nome)</dd>
+                </dl>
+
+                <div class="mt-4 text-center">
+                    <a asp-action="Edit" asp-route-id="@Model?.id" class="btn btn-primary me-2">Editar</a>
+                    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

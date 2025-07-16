@@ -1,47 +1,63 @@
 ﻿@model ProjetoOficialVeiculos.Models.Empresa
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Criar Empresa";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1 class="text-center text-black mb-4">Criar Nova Empresa</h1>
 
-<h4>Empresa</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="nome" class="control-label"></label>
-                <input asp-for="nome" class="form-control" />
-                <span asp-validation-for="nome" class="text-danger"></span>
+<div class="row justify-content-center">
+    <div class="col-md-20">
+        <!-- Aumentei a largura da coluna para dar mais espaço -->
+        <div class="card shadow-sm border-dark">
+            <div class="card-header text-center bg-dark text-white">
+                <h4 class="mb-0">Cadastrar Empresa</h4>
             </div>
-            <div class="form-group">
-                <label asp-for="cnpj" class="control-label"></label>
-                <input asp-for="cnpj" class="form-control" />
-                <span asp-validation-for="cnpj" class="text-danger"></span>
+            <div class="card-body bg-dark text-white">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <!-- Nome -->
+                    <div class="form-group mb-3">
+                        <label asp-for="nome" class="form-label">Nome da Empresa</label>
+                        <input asp-for="nome" class="form-control form-control-lg" placeholder="Digite o nome da empresa" style="height: 60px; padding: 10px; width: 100%; box-sizing: border-box;" />
+                        <span asp-validation-for="nome" class="text-danger"></span>
+                    </div>
+
+                    <!-- CNPJ -->
+                    <div class="form-group mb-3">
+                        <label asp-for="cnpj" class="form-label">CNPJ</label>
+                        <input asp-for="cnpj" class="form-control form-control-lg" placeholder="Digite o CNPJ" style="height: 60px; padding: 10px; width: 100%; box-sizing: border-box;" />
+                        <span asp-validation-for="cnpj" class="text-danger"></span>
+                    </div>
+
+                    <!-- Contato -->
+                    <div class="form-group mb-3">
+                        <label asp-for="contato" class="form-label">Contato</label>
+                        <input asp-for="contato" class="form-control form-control-lg" placeholder="Digite o número de contato" style="height: 60px; padding: 10px; width: 100%; box-sizing: border-box;" />
+                        <span asp-validation-for="contato" class="text-danger"></span>
+                    </div>
+
+                    <!-- Endereço -->
+                    <div class="form-group mb-3">
+                        <label asp-for="endereco" class="form-label">Endereço</label>
+                        <input asp-for="endereco" class="form-control form-control-lg" placeholder="Digite o endereço da empresa" style="height: 60px; padding: 10px; width: 100%; box-sizing: border-box;" />
+                        <span asp-validation-for="endereco" class="text-danger"></span>
+                    </div>
+
+                    <!-- Botão de Enviar -->
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-success btn-lg" style="width: 100%; height: 60px;">Criar Empresa</button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="contato" class="control-label"></label>
-                <input asp-for="contato" class="form-control" />
-                <span asp-validation-for="contato" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="endereco" class="control-label"></label>
-                <input asp-for="endereco" class="form-control" />
-                <span asp-validation-for="endereco" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="text-center mt-4">
+    <a asp-action="Index" class="btn btn-link text-white">Voltar para a lista</a>
 </div>
 
 @section Scripts {

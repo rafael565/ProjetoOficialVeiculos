@@ -9,7 +9,7 @@ namespace ProjetoOficialVeiculos.Models
         [Display(Name = "ID: ")]
         public int id { get; set; }
 
-        [Required(ErrorMessage = "Campo nome é obrigatório")]
+        
         [StringLength(35)]
         [Display(Name = "Nome Do Motorista: ")]
         public string nome { get; set; }

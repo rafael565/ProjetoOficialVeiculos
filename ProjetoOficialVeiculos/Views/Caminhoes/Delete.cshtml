@@ -1,28 +1,43 @@
 ﻿@model ProjetoOficialVeiculos.Models.Caminhao
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Excluir Caminhão";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Delete</h1>
+<h1 class="text-center mb-4">Excluir Caminhão</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Caminhao</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.placa)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.placa)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="alert alert-warning text-center" role="alert">
+                <i class="fas fa-exclamation-triangle"></i> Você tem certeza de que deseja excluir este caminhão?
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Detalhes do Caminhão</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Placa do Caminhão</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.placa)</dd>
+                    </dl>
+                </div>
+                <div class="card-footer text-center">
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="id" />
+                        <button type="submit" class="btn btn-danger btn-lg rounded-3 w-100 mb-2">
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </button>
+                    </form>
+                    <a asp-action="Index" class="btn btn-link text-decoration-none">Cancelar e Voltar à Lista</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+}

@@ -12,8 +12,8 @@ using ProjetoOficialVeiculos.Models;
 namespace ProjetoOficialVeiculos.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20250306190847_Inicial")]
-    partial class Inicial
+    [Migration("20250307031313_Inical")]
+    partial class Inical
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,7 +42,7 @@ namespace ProjetoOficialVeiculos.Migrations
                     b.Property<int>("MaterialID")
                         .HasColumnType("int");
 
-                    b.Property<int>("MotoristaID")
+                    b.Property<int?>("MotoristaID")
                         .HasColumnType("int");
 
                     b.Property<int>("OrdemFila")
@@ -175,9 +175,7 @@ namespace ProjetoOficialVeiculos.Migrations
 
                     b.HasOne("ProjetoOficialVeiculos.Models.Motorista", "motorista")
                         .WithMany()
-                        .HasForeignKey("MotoristaID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MotoristaID");
 
                     b.HasOne("ProjetoOficialVeiculos.Models.Caminhao", "caminhao")
                         .WithMany()

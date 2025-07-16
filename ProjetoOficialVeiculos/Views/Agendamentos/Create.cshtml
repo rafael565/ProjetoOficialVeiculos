@@ -4,68 +4,105 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1 class="text-center display-4 text-primary">Novo Agendamento</h1>
 
-<h4>Agendamento</h4>
+<h4 class="text-center text-muted mb-4">Preencha as informações abaixo</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
 
-            <div class="form-group">
-                <label asp-for="caminhaoID" class="control-label"></label>
-                <select asp-for="caminhaoID" class="form-control" asp-items="ViewBag.caminhaoID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="empresaID" class="control-label"></label>
-                <select asp-for="empresaID" class="form-control" asp-items="ViewBag.empresaID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaterialID" class="control-label"></label>
-                <select asp-for="MaterialID" class="form-control" asp-items="ViewBag.MaterialID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="DataAgendamento" class="control-label"></label>
-                <input asp-for="DataAgendamento" class="form-control" />
-                <span asp-validation-for="DataAgendamento" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PesoCarregado" class="control-label"></label>
-                <input asp-for="PesoCarregado" class="form-control" />
-                <span asp-validation-for="PesoCarregado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label">Status</label>
-                <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<ControleOficialVeiculos.Enum.StatusAgendamento>()">
-                    <option value="">Selecione o Status</option>
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
+                <div class="form-group">
+                    <label asp-for="caminhaoID" class="control-label">Caminhão</label>
+                    <select asp-for="caminhaoID" class="form-control form-control-lg" asp-items="ViewBag.caminhaoID" id="selectCaminhoes">
+                        <option value="">Selecione um caminhão...</option>
+                    </select>
+                    <button type="button" id="addCaminhaoBtn" class="btn btn-link">Adicionar novo caminhão</button>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="DataConclusao" class="control-label"></label>
-                <input asp-for="DataConclusao" class="form-control" />
-                <span asp-validation-for="DataConclusao" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OrdemFila" class="control-label"></label>
-                <input asp-for="OrdemFila" class="form-control" />
-                <span asp-validation-for="OrdemFila" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MotoristaID" class="control-label"></label>
-                <select asp-for="MotoristaID" class="form-control" asp-items="ViewBag.MotoristaID"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                <div id="newCaminhaoContainer" style="display:none;">
+                    <div class="form-group">
+                        <label for="placa">Placa do Caminhão:</label>
+                        <input type="text" id="placa" class="form-control" placeholder="Digite a placa do caminhão">
+                        <button type="button" id="saveCaminhaoBtn" class="btn btn-primary">Salvar</button>
+                    </div>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label asp-for="empresaID" class="control-label">Empresa</label>
+                    <select asp-for="empresaID" class="form-control form-control-lg" asp-items="ViewBag.empresaID"></select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="MaterialID" class="control-label">Material</label>
+                    <select asp-for="MaterialID" class="form-control form-control-lg" asp-items="ViewBag.MaterialID"></select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DataAgendamento" class="control-label"></label>
+                    <input asp-for="DataAgendamento" class="form-control" />
+                    <span asp-validation-for="DataAgendamento" class="text-danger"></span>
+                </div>
+               
+
+                <div class="form-group">
+                    <label asp-for="PesoCarregado" class="control-label">Peso Carregado</label>
+                    <input asp-for="PesoCarregado" class="form-control form-control-lg" placeholder="Digite o peso" />
+                    <span asp-validation-for="PesoCarregado" class="text-danger"></span>
+                </div>
+
+                <!-- Campo oculto para "PesoCarregado" -->
+                <input type="hidden" name="PesoCarregado" id="pesoCarregadoHidden" value="" />
+
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="pesoNaoInformado" name="pesoNaoInformado" />
+                    <label class="form-check-label" for="pesoNaoInformado">Peso Não Informado</label>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Status" class="control-label">Status</label>
+                    <select asp-for="Status" class="form-control form-control-lg" asp-items="Html.GetEnumSelectList<ControleOficialVeiculos.Enum.StatusAgendamento>()">
+                        <option value="">Selecione o Status</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+
+               
+                <div class="form-group">
+                    <label asp-for="DataConclusao" class="control-label"></label>
+                    <input asp-for="DataConclusao" class="form-control" />
+                    <span asp-validation-for="DataConclusao" class="text-danger"></span>
+                </div>
+
+                <!-- Campo "OrdemFila" será oculto -->
+                <div class="form-group" style="display:none;">
+                    <label asp-for="OrdemFila" class="control-label">Ordem da Fila</label>
+                    <input asp-for="OrdemFila" class="form-control form-control-lg" />
+                    <span asp-validation-for="OrdemFila" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="MotoristaID" class="control-label">Motorista</label>
+                    <select asp-for="MotoristaID" class="form-control form-control-lg" asp-items="ViewBag.MotoristaID">
+                        <option value="-1" selected>Sem Motorista</option>
+                    </select>
+                    <span asp-validation-for="MotoristaID" class="text-danger"></span>
+                </div>
+
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-lg btn-success btn-block">Criar Agendamento</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="text-center mt-4">
+    <a asp-action="Index" class="btn btn-link">Voltar para a Lista</a>
 </div>
 
 @section Scripts {
@@ -73,3 +110,73 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Exibe o campo para digitar a placa quando clicar em "Adicionar novo caminhão"
+        $('#addCaminhaoBtn').click(function () {
+            $('#newCaminhaoContainer').show();
+        });
+
+        // Quando o botão "Salvar" for pressionado
+        $('#saveCaminhaoBtn').click(function () {
+            var placa = $('#placa').val().trim();
+
+            if (placa) {
+                // Envia a placa para o servidor para salvar no banco de dados
+                $.ajax({
+                    url: '@Url.Action("AddCaminhao", "Agendamentos")',
+                    type: 'POST',
+                    data: { placa: placa },
+                    success: function (response) {
+                        // Verifique a resposta no console para garantir que ela seja correta
+                        console.log(response);
+
+                        // Verifique se a resposta está correta
+                        if (response && response.id && response.placa) {
+                            var newOption = new Option(response.placa, response.id);
+                            // Adiciona a nova opção ao select
+                            $('#selectCaminhoes').append($(newOption));
+
+                            // Seleciona o novo caminhão inserido
+                            $('#selectCaminhoes').val(response.id).change();
+
+                            $('#placa').val(''); // Limpa o campo de placa
+                            $('#newCaminhaoContainer').hide(); // Esconde o campo
+                        } else {
+                            alert('Erro ao salvar o caminhão');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Caso ocorra algum erro, vamos exibir o erro no console para depuração
+                        console.error('Erro ao salvar o caminhão: ', error);
+                        alert('Erro ao salvar o caminhão');
+                    }
+                });
+            } else {
+                alert('Por favor, insira uma placa válida.');
+            }
+        });
+    });
+</script>
+
+
+
+<script>
+    // Script para lidar com a lógica do checkbox
+    document.getElementById('pesoNaoInformado').addEventListener('change', function () {
+        const pesoInput = document.querySelector('input[name="PesoCarregado"]');
+        const pesoHiddenInput = document.getElementById('pesoCarregadoHidden');
+
+        if (this.checked) {
+            pesoInput.value = ''; // Limpa o campo de peso
+            pesoHiddenInput.value = '-1'; // Define -1 no campo oculto
+            pesoInput.disabled = true; // Desabilita o campo
+        } else {
+            pesoInput.disabled = false; // Habilita o campo
+            pesoHiddenInput.value = ''; // Limpa o valor oculto
+        }
+    });
+</script>

@@ -1,0 +1,29 @@
+﻿@model ProjetoOficialVeiculos.Models.Agendamento
+
+@{
+    ViewData["Title"] = "Editar Status";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">✏️ Editar Status do Agendamento</h2>
+        <form asp-action="EditarAbastecimento" method="post">
+            <input type="hidden" asp-for="id" />
+
+            <div class="mb-3">
+                <label asp-for="Status" class="form-label">Status</label>
+                <select asp-for="Status" class="form-select" asp-items="ViewBag.StatusRestrito">
+                    <option value="">Selecione o Status</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">💾 Salvar</button>
+                <a asp-action="DetalhesAbastecimento" asp-route-id="@Model.id" class="btn btn-secondary">↩️ Voltar</a>
+
+            </div>
+        </form>
+    </div>
+</div>

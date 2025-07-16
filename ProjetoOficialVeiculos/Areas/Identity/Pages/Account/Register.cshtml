@@ -1,0 +1,281 @@
+﻿@page
+@model RegisterModel
+
+@{
+    ViewData["Title"] = "Cadastro de Usuário";
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Controle de Carregamentos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c2f33;
+            --secondary-color: #808080;
+            --accent-color: #f7b733;
+            --dark-color: #2d4059;
+            --light-color: #808080;
+        }
+
+        body {
+            background: linear-gradient(135deg, #808080 0%, #bdbebd 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .register-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .register-left {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .register-right {
+            padding: 3rem;
+        }
+
+        .logo {
+            width: 120px;
+            margin-bottom: 2rem;
+        }
+
+        .app-title {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .app-subtitle {
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .benefit-list {
+            list-style: none;
+            padding: 0;
+        }
+
+            .benefit-list li {
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+            }
+
+        .benefit-icon {
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-floating label {
+            padding: 12px 15px;
+        }
+
+        .btn-register {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+            .btn-register:hover {
+                background-color: var(--dark-color);
+                transform: translateY(-2px);
+            }
+
+        .password-strength {
+            height: 5px;
+            margin-top: 5px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .strength-weak {
+            width: 25%;
+            background-color: #dc3545;
+        }
+
+        .strength-medium {
+            width: 50%;
+            background-color: #fd7e14;
+        }
+
+        .strength-strong {
+            width: 100%;
+            background-color: #28a745;
+        }
+
+        .password-criteria {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+
+            .password-criteria i {
+                margin-right: 5px;
+            }
+
+        .criteria-met {
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container register-container">
+        <div class="row g-0">
+            <!-- Left Side - Branding and Benefits -->
+            <div class="col-lg-6 d-none d-lg-flex register-left">
+                <div>
+                    
+                    <h1 class="app-title">Controle de Carregamentos</h1>
+                    <p class="app-subtitle">Junte-se à nossa plataforma de gestão industrial</p>
+
+                    <ul class="benefit-list">
+                        <li>
+                            <span class="benefit-icon"><i class="fas fa-cogs"></i></span>
+                            Controle total das operações
+                        </li>
+                        <li>
+                            <span class="benefit-icon"><i class="fas fa-shield-alt"></i></span>
+                            Dados protegidos e seguros
+                        </li>
+                        <li>
+                            <span class="benefit-icon"><i class="fas fa-chart-pie"></i></span>
+                            Relatórios e análises completas
+                        </li>
+                        <li>
+                            <span class="benefit-icon"><i class="fas fa-headset"></i></span>
+                            Suporte especializado 24/7
+                        </li>
+                    </ul>
+
+                   
+                </div>
+            </div>
+
+            <!-- Right Side - Register Form -->
+            <div class="col-lg-6 register-right">
+                <div class="text-center mb-4 d-lg-none">
+                    <img src="https://via.placeholder.com/120x120?text=LOGO" alt="Logo" class="logo">
+                    <h2 class="app-title">Controle de Carregamentos</h2>
+                </div>
+
+                <h3 class="mb-4">Criar Nova Conta</h3>
+                <p class="text-muted mb-4">Preencha os dados abaixo para se registrar</p>
+
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="nome@exemplo.com" />
+                        <label asp-for="Input.Email">Email</label>
+                        <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-2">
+                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="senha" id="password" />
+                        <label asp-for="Input.Password">Senha</label>
+                        <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                        <div class="password-strength strength-weak" id="passwordStrength"></div>
+                    </div>
+
+                    <div class="password-criteria">
+                        <p><i class="fas fa-check-circle" id="lengthCheck"></i> Mínimo 6 caracteres</p>
+                        <p><i class="fas fa-check-circle" id="digitCheck"></i> Pelo menos 1 número</p>
+                        <p><i class="fas fa-check-circle" id="caseCheck"></i> Letras maiúsculas e minúsculas</p>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="confirme-senha" />
+                        <label asp-for="Input.ConfirmPassword">Confirme a Senha</label>
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary btn-register mb-3">
+                        <i class="fas fa-user-plus me-2"></i> Registrar
+                    </button>
+
+                    <div class="text-center mt-3">
+                        <p>Já possui uma conta? <a asp-page="./Login" class="text-decoration-none">Faça login aqui</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Validação visual da senha
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('passwordStrength');
+            const lengthCheck = document.getElementById('lengthCheck');
+            const digitCheck = document.getElementById('digitCheck');
+            const caseCheck = document.getElementById('caseCheck');
+
+            // Reset classes
+            strengthBar.className = 'password-strength';
+            [lengthCheck, digitCheck, caseCheck].forEach(el => {
+                el.classList.remove('criteria-met');
+            });
+
+            // Verificar critérios
+            const hasLength = password.length >= 6;
+            const hasDigit = /\d/.test(password);
+            const hasCase = /[a-z]/.test(password) && /[A-Z]/.test(password);
+
+            // Atualizar ícones
+            if (hasLength) lengthCheck.classList.add('criteria-met');
+            if (hasDigit) digitCheck.classList.add('criteria-met');
+            if (hasCase) caseCheck.classList.add('criteria-met');
+
+            // Atualizar barra de força
+            const strength = [hasLength, hasDigit, hasCase].filter(Boolean).length;
+
+            if (strength === 3) {
+                strengthBar.classList.add('strength-strong');
+            } else if (strength >= 2) {
+                strengthBar.classList.add('strength-medium');
+            } else if (strength >= 1) {
+                strengthBar.classList.add('strength-weak');
+            }
+        });
+    </script>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>

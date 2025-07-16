@@ -39,14 +39,13 @@ namespace ProjetoOficialVeiculos.Migrations
                     b.Property<int>("MaterialID")
                         .HasColumnType("int");
 
-                    b.Property<int>("MotoristaID")
+                    b.Property<int?>("MotoristaID")
                         .HasColumnType("int");
 
                     b.Property<int>("OrdemFila")
                         .HasColumnType("int");
 
                     b.Property<string>("PesoCarregado")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -80,7 +79,6 @@ namespace ProjetoOficialVeiculos.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
                     b.Property<string>("placa")
-                        .IsRequired()
                         .HasMaxLength(35)
                         .HasColumnType("nvarchar(35)");
 
@@ -153,7 +151,6 @@ namespace ProjetoOficialVeiculos.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
                     b.Property<string>("nome")
-                        .IsRequired()
                         .HasMaxLength(35)
                         .HasColumnType("nvarchar(35)");
 
@@ -172,9 +169,7 @@ namespace ProjetoOficialVeiculos.Migrations
 
                     b.HasOne("ProjetoOficialVeiculos.Models.Motorista", "motorista")
                         .WithMany()
-                        .HasForeignKey("MotoristaID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MotoristaID");
 
                     b.HasOne("ProjetoOficialVeiculos.Models.Caminhao", "caminhao")
                         .WithMany()

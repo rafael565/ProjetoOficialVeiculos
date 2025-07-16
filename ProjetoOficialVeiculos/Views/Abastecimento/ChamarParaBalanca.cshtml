@@ -1,0 +1,23 @@
+﻿@model ProjetoOficialVeiculos.Models.Agendamento
+
+@{
+    ViewData["Title"] = "ChamarParaBalanca";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container mt-4">
+    <div class="card p-4 shadow">
+        <h2 class="text-center mb-3">🚛 Caminhão Autorizado para Balança</h2>
+        <hr />
+        <h4><strong>Placa do Caminhão:</strong> @Model.caminhao.placa</h4>
+        <h4><strong>Empresa:</strong> @Model.empresa.nome</h4>
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Voltar</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

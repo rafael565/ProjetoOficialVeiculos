@@ -1,34 +1,50 @@
 ﻿@model ProjetoOficialVeiculos.Models.Motorista
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Cadastro Motorista";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1>Cadastro</h1>
 
 <h4>Motorista</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="nome" class="control-label"></label>
-                <input asp-for="nome" class="form-control" />
-                <span asp-validation-for="nome" class="text-danger"></span>
+
+
+<div class="row justify-content-center">
+    <div class="col-md-20">
+       
+        <div class="card shadow-sm border-dark">
+            <div class="card-header text-center bg-dark text-white">
+                <h4 class="mb-0">Cadastrar Motorista</h4>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="card-body bg-dark text-white">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <!-- Nome -->
+                    <div class="form-group mb-3">
+                        <label asp-for="nome" class="form-label">Nome do Motorista</label>
+                        <input asp-for="nome" class="form-control form-control-lg" placeholder="Digite o nome do Motorista" style="height: 60px; padding: 10px; width: 100%; box-sizing: border-box;" />
+                        <span asp-validation-for="nome" class="text-danger"></span>
+                    </div>
+
+
+                    <!-- Botão de Enviar -->
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-success btn-lg" style="width: 100%; height: 60px;">Cadastro do Motorista</button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="text-center mt-4">
+    <a asp-action="Index" class="btn btn-link text-white">Voltar para a lista</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

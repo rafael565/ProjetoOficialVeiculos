@@ -1,54 +1,390 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager﻿
+
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ControleDeVeiculos</title>
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ControleDeVeiculos.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Layout padrão (não logado) */
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Layout quando logado */
+        .logged-in-body {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles (apenas quando logado) */
+        .sidebar {
+            width: 60px;
+            height: 100vh;
+            background-color: #343a40;
+            color: white;
+            position: fixed;
+            transition: all 0.3s;
+            overflow: hidden;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            display: none; /* Escondido por padrão */
+        }
+
+        .sidebar-visible {
+            display: block; /* Mostrado quando logado */
+        }
+
+        .sidebar:hover {
+            width: 250px;
+        }
+
+        .sidebar-brand {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-brand-icon {
+            font-size: 1.5rem;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .sidebar-brand-text {
+            display: none;
+            margin-left: 1rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+            white-space: nowrap;
+        }
+
+        .sidebar:hover .sidebar-brand-text {
+            display: inline;
+        }
+
+        .sidebar-nav {
+            padding: 0;
+            list-style: none;
+            height: calc(100% - 120px);
+            overflow-y: auto;
+        }
+
+        .sidebar-item {
+            position: relative;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+            .sidebar-link:hover {
+                color: white;
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+
+        .sidebar-icon {
+            font-size: 1.2rem;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .sidebar-text {
+            display: none;
+        }
+
+        .sidebar:hover .sidebar-text {
+            display: inline;
+        }
+
+        /* Estilo para o logout na sidebar */
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #212529; /* Mesma cor do footer */
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logout {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #bbb;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+            .sidebar-logout:hover {
+                color: white;
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+
+        /* Main Content Adjustment */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .logged-in-main-wrapper {
+            margin-left: 60px;
+            transition: margin-left 0.3s;
+            width: calc(100% - 60px);
+        }
+
+        .sidebar:hover ~ .main-wrapper {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        /* Navbar and Footer Adjustments */
+        .navbar {
+            background-color: #212529;
+            width: 100%;
+            z-index: 999;
+        }
+
+        .logged-in-navbar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: calc(100% - 60px);
+            transition: width 0.3s;
+        }
+
+        .sidebar:hover ~ .main-wrapper .logged-in-navbar {
+            width: calc(100% - 250px);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+        }
+
+        .logged-in-main-content {
+            margin-top: 60px; /* Space for fixed navbar */
+        }
+
+        .footer {
+            background-color: #212529;
+            color: #bbb;
+            padding: 1rem 0;
+            text-align: center;
+            font-size: 0.9em;
+            width: 100%;
+        }
+
+        /* Other existing styles */
+        .navbar-brand {
+            color: #fff !important;
+            font-weight: bold;
+            font-size: 1.6em;
+        }
+
+        .navbar-nav .nav-link {
+            color: #ccc !important;
+            font-size: 1.05em;
+            margin-right: 10px;
+        }
+
+            .navbar-nav .nav-link:hover {
+                color: #fff !important;
+                background-color: #0d6efd;
+                border-radius: 4px;
+            }
+
+        .dropdown-menu {
+            background-color: #2c2f33;
+            border: none;
+        }
+
+        .dropdown-item {
+            color: #e0e0e0;
+        }
+
+            .dropdown-item:hover {
+                background-color: #0d6efd;
+                color: white;
+            }
+
+        .btn-dashboard {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            margin-left: 15px;
+        }
+
+            .btn-dashboard:hover {
+                background-color: #0b5ed7;
+            }
+    </style>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ControleDeVeiculos</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-black" href="#" id="Cadastro" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Cadastro
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="Cadastro">
-                            <li><a class="dropdown-item" asp-area="" asp-controller="Agendamentos" asp-action="Index">Agendamentos</a></li>
-                            <li><a class="dropdown-item" asp-area="" asp-controller="Caminhoes" asp-action="Index">Cadastro de Caminhoes</a></li>
-                            <li><a class="dropdown-item" asp-area="" asp-controller="Empresas" asp-action="Index">Cadastro de Empresas</a></li>
-                            <li><a class="dropdown-item" asp-area="" asp-controller="Materiais" asp-action="Index">Cadastro de Materias</a></li>
-                            <li><a class="dropdown-item" asp-area="" asp-controller="Motoristas" asp-action="Index">Cadastro de Motoristas</a></li>
-                        </ul>
-                    </li>
-                    <partial name="_LoginPartial" />
+<body class="@(SignInManager.IsSignedIn(User) ? "logged-in-body" : "")">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <!-- Sidebar (apenas quando logado) -->
+        <div class="sidebar sidebar-visible">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon">
+                    <i class="fas fa-car"></i>
                 </div>
+                <span class="sidebar-brand-text">ControleVeículos</span>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="@Url.Action("Index", "Home")" class="sidebar-link">
+                        <i class="sidebar-icon fas fa-home"></i>
+                        <span class="sidebar-text">Início</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" asp-controller="Agendamentos" asp-action="Index">
+                        <i class="sidebar-icon fas fa-calendar-alt"></i>
+                        <span class="sidebar-text">Agendamentos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" asp-controller="Abastecimento" asp-action="Index">
+                        <i class="sidebar-icon fas fa-gas-pump"></i>
+                        <span class="sidebar-text">Abastecimento</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link" asp-controller="Abastecimento" asp-action="listAbastecimento">
+                        <i class="sidebar-icon fas fa-oil-can"></i>
+                        <span class="sidebar-text">Carregamento</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" asp-controller="Caminhoes" asp-action="Index">
+                        <i class="sidebar-icon fas fa-truck"></i>
+                        <span class="sidebar-text">Caminhões</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" asp-controller="Empresas" asp-action="Index">
+                        <i class="sidebar-icon fas fa-building"></i>
+                        <span class="sidebar-text">Empresas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" asp-controller="Materiais" asp-action="Index">
+                        <i class="sidebar-icon fas fa-boxes"></i>
+                        <span class="sidebar-text">Materiais</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" asp-controller="Motoristas" asp-action="Index">
+                        <i class="sidebar-icon fas fa-user-tie"></i>
+                        <span class="sidebar-text">Motoristas</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a href="@Url.Action("Dashboard", "Agendamentos")" class="sidebar-link">
+                        <i class="sidebar-icon fas fa-chart-line"></i>
+                        <span class="sidebar-text">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Área de Logout -->
+            <div class="sidebar-footer" style="height: 55px; background-color: #212529;"></div>
+        </div>
+    }
+
+    <div class="main-wrapper @(SignInManager.IsSignedIn(User) ? "logged-in-main-wrapper" : "")">
+        <header>
+            <nav class="navbar navbar-expand-lg bg-dark navbar-dark shadow-sm px-4">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
+            ControleDeVeículos
+        </a>
+
+        <div class="d-flex align-items-center ms-auto">
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <span class="text-white me-3">
+                    <i class="fas fa-user-circle me-1"></i>
+                    Olá, @User.Identity?.Name!
+                </span>
+                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" class="d-inline">
+                    <button type="submit" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i> Sair
+                    </button>
+                </form>
+            }
+            else
+            {
+                <partial name="_LoginPartial" />
+            }
+        </div>
+    </div>
+</nav>
+        </header>
+
+        <main class="main-content @(SignInManager.IsSignedIn(User) ? "logged-in-main-content" : "")">
             @RenderBody()
         </main>
+
+        <footer class="footer">
+            <div class="container">
+                &copy; 2025 - ControleDeVeiculos | <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - ControleDeVeiculos - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // Add active class to current menu item
+        $(document).ready(function() {
+            var url = window.location.pathname;
+
+            $('.sidebar-link').each(function() {
+                var link = $(this).attr('href');
+                if (url === link) {
+                    $(this).addClass('active');
+                    $(this).closest('.sidebar-item').addClass('active');
+                }
+            });
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

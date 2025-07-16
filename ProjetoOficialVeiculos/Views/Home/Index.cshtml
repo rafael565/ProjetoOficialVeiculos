@@ -1,8 +1,345 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+@{
     ViewData["Title"] = "Home Page";
 }
+<div id="dataHoraTopo" class="data-hora-topo"></div>
+<div class="home-container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Controle de Veículos</h1>
+            <p class="hero-subtitle">Sistema completo para gestão de frotas e operações logísticas</p>
+            
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+           
+
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <div class="hero-buttons">
+                    <a asp-controller="Agendamentos" asp-action="Dashboard" class="btn btn-primary btn-lg">
+                        <i class="fas fa-tachometer-alt me-2"></i> Acessar Dashboard
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="hero-buttons">
+                    <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-user-plus me-2"></i> Cadastre-se
+                    </a>
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i> Login
+                    </a>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <h2 class="section-title">Principais Funcionalidades</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon bg-primary">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3>Agendamentos</h3>
+                <p>Controle completo de agendamentos de veículos e motoristas.</p>
+                <a asp-controller="Agendamentos" asp-action="Index" class="feature-link">
+                    Acessar <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon bg-success">
+                    <i class="fas fa-gas-pump"></i>
+                </div>
+                <h3>Abastecimento</h3>
+                <p>Registro e acompanhamento de abastecimentos da frota.</p>
+                <a asp-controller="Abastecimento" asp-action="Index" class="feature-link">
+                    Acessar <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon bg-warning">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <h3>Veículos</h3>
+                <p>Cadastro e gestão de todos os veículos da frota.</p>
+                <a asp-controller="Caminhoes" asp-action="Index" class="feature-link">
+                    Acessar <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon bg-info">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Relatórios</h3>
+                <p>Dashboard com indicadores e relatórios gerenciais.</p>
+                <a asp-controller="Dashboard" asp-action="Index" class="feature-link">
+                    Acessar <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stat-item">
+            <h3>+500</h3>
+            <p>Veículos Gerenciados</p>
+        </div>
+        <div class="stat-item">
+            <h3>99%</h3>
+            <p>Disponibilidade</p>
+        </div>
+        <div class="stat-item">
+            <h3>24/7</h3>
+            <p>Suporte Operacional</p>
+        </div>
+    </section>
 </div>
+
+@section Scripts {
+    <script>
+        // Função para atualizar data e hora
+        function atualizarDataHora() {
+            const agora = new Date();
+
+            const diasSemana = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira",
+                              "Quinta-feira", "Sexta-feira", "Sábado"];
+            const diaSemana = diasSemana[agora.getDay()];
+
+            const dia = String(agora.getDate()).padStart(2, '0');
+            const mes = String(agora.getMonth() + 1).padStart(2, '0');
+            const ano = agora.getFullYear();
+
+            const hora = String(agora.getHours()).padStart(2, '0');
+            const minuto = String(agora.getMinutes()).padStart(2, '0');
+            const segundo = String(agora.getSeconds()).padStart(2, '0');
+
+            const dataHoraFormatada = `${diaSemana}, ${dia}/${mes}/${ano} ${hora}:${minuto}:${segundo}`;
+
+            // Corrigido para usar o ID correto
+            document.getElementById("dataHoraTopo").textContent = dataHoraFormatada;
+        }
+
+        // Atualiza a cada segundo
+        setInterval(atualizarDataHora, 1000);
+
+        // Executa imediatamente ao carregar
+        atualizarDataHora();
+    </script>
+
+}
+
+
+<style>
+    /* Base Styles */
+    .home-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        color: #333;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        padding: 3rem 0;
+    }
+
+    .hero-content {
+        text-align: center;
+        max-width: 800px;
+    }
+
+    .hero-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #212529;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.4rem;
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+
+    .hero-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .hero-image {
+        max-width: 600px;
+        margin-top: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+        .hero-image img {
+            transition: transform 0.3s ease;
+        }
+
+        .hero-image:hover img {
+            transform: scale(1.03);
+        }
+
+    /* Features Section */
+    .features-section {
+        padding: 4rem 0;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.2rem;
+        margin-bottom: 3rem;
+        color: #212529;
+        position: relative;
+    }
+
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: #0d6efd;
+            margin: 1rem auto;
+            border-radius: 2px;
+        }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .feature-card h3 {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+        color: #212529;
+    }
+
+    .feature-card p {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-link {
+        color: #0d6efd;
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        transition: color 0.2s;
+    }
+
+        .feature-link:hover {
+            color: #0b5ed7;
+        }
+
+        .feature-link i {
+            margin-left: 0.5rem;
+            transition: transform 0.2s;
+        }
+
+        .feature-link:hover i {
+            transform: translateX(3px);
+        }
+
+    /* Stats Section */
+    .stats-section {
+        background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+        border-radius: 10px;
+        padding: 3rem 2rem;
+        margin: 3rem 0;
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 2rem;
+        color: white;
+        text-align: center;
+    }
+
+    .stat-item h3 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-item p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+ 
+
+    .hero-content {
+        text-align: left;
+        max-width: 50%;
+    }
+
+    .hero-buttons {
+        justify-content: flex-start;
+    }
+
+    }
+
+ 
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+
+    }
+
+    .data-hora-topo {
+        position: fixed;
+        top: 10px;
+        right: 50px;
+        color: #6c757d;
+        font-size: 1rem;
+        z-index: 9999;
+        background-color: white;
+        padding: 5px 10px;
+        border-radius: 8px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+</style>

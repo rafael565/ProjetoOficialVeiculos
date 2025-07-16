@@ -1,0 +1,189 @@
+﻿@{
+    ViewData["Title"] = "Dashboard de Agendamentos";
+}
+
+<div class="mb-3">
+    <a asp-controller="Home" asp-action="Index"
+       class="btn btn-outline-secondary px-4 py-2 shadow-sm rounded-pill transition"
+       style="display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fas fa-arrow-left"></i>
+        <span>Voltar para Início</span>
+    </a>
+</div>
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-warning">
+        @ViewBag.Message
+    </div>
+}
+
+<!-- Filtro de Meses e Ano -->
+<form asp-action="Dashboard" method="get" class="row mb-4 g-3 align-items-end">
+    <div class="col-md-6">
+        <label class="form-label">Meses</label>
+        <div class="row">
+            @for (int i = 1; i <= 12; i++)
+            {
+                var nomeMes = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i);
+                var isChecked = ViewBag.Meses != null && ViewBag.Meses.Contains(i);
+                <div class="col-6 col-sm-4 col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="meses" value="@i" id="mes@i" @(isChecked ? "checked" : "") />
+                        <label class="form-check-label" for="mes@i">@nomeMes</label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Ano</label>
+        <input type="number" name="ano" class="form-control" value="@ViewBag.Ano" />
+    </div>
+    <div class="col-md-3 d-grid">
+        <label class="form-label invisible">Filtrar</label>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </div>
+</form>
+
+<!-- Cartões de Totais -->
+<div class="row mb-4">
+    <div class="col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Total Agendamentos</h5>
+                <p id="totalAgendamentos">@ViewBag.StatusData.total</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Pendente</h5>
+                <p>@ViewBag.StatusData.pendente</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Concluído</h5>
+                <p>@ViewBag.StatusData.concluido</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Cancelado</h5>
+                <p>@ViewBag.StatusData.cancelado</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title">Distribuição por Status</h6>
+                <canvas id="statusPieChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title">Agendamentos por Empresa</h6>
+                <canvas id="empresaBarChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title">Agendamentos por Dia</h6>
+                <canvas id="lineChartPorDia" height="75"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var statusData = @Html.Raw(Json.Serialize(ViewBag.StatusData));
+
+        // Gráfico de Pizza (Status)
+        new Chart(document.getElementById('statusPieChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Aguardando Liberação', 'Concluído', 'Cancelado' , 'Em Carregamento'],
+                datasets: [{
+                    data: [
+                        Math.round(statusData.pendente),
+                        Math.round(statusData.concluido),
+                        Math.round(statusData.cancelado)
+                    ],
+                    backgroundColor: ['#ffc107', '#28a745', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // Gráfico de Barras (Empresas)
+        new Chart(document.getElementById('empresaBarChart'), {
+            type: 'bar',
+            data: {
+                labels: statusData.empresasLabels,
+                datasets: [{
+                    label: 'Qtd por Empresa',
+                    data: statusData.empresasData.map(x => Math.round(x)),
+                    backgroundColor: '#007bff'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Quantidade' },
+                        ticks: { stepSize: 1, precision: 0 }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Linha (Por Dia)
+        new Chart(document.getElementById('lineChartPorDia'), {
+            type: 'line',
+            data: {
+                labels: Array.from({ length: statusData.porDia.length }, (_, i) => i + 1),
+                datasets: [{
+                    label: 'Agendamentos por Dia',
+                    data: statusData.porDia.map(x => Math.round(x)),
+                    borderColor: '#007bff',
+                    fill: false,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Dia' } },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Quantidade' },
+                        ticks: { stepSize: 1, precision: 0 }
+                    }
+                }
+            }
+        });
+    </script>
+}

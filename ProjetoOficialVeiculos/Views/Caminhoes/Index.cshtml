@@ -1,36 +1,52 @@
 ﻿@model IEnumerable<ProjetoOficialVeiculos.Models.Caminhao>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Caminhões";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="mb-3">
+    <a asp-controller="Home" asp-action="Index"
+       class="btn btn-outline-secondary px-4 py-2 shadow-sm rounded-pill transition"
+       style="display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fas fa-arrow-left"></i>
+        <span>Voltar para Início</span>
+    </a>
+</div>
 
-<h1>Index</h1>
+<h1 class="text-center mb-4">Lista de Caminhões</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
+<p class="text-center">
+    <a asp-action="Create" class="btn btn-warning btn-lg">Criar Novo Caminhão</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.placa)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.placa)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.placa)</th>
+                <th class="text-center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.placa)</td>
+                    <td class="text-center">
+                        <a asp-action="Edit" asp-route-id="@item.id" class="btn btn-warning btn-sm">Editar</a> |
+                        <a asp-action="Details" asp-route-id="@item.id" class="btn btn-info btn-sm">Detalhes</a> |
+                        <a asp-action="Delete" asp-route-id="@item.id" class="btn btn-danger btn-sm">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    /* Customizando a cor de fundo do cabeçalho da tabela e o texto */
+    thead.thead-dark th {
+        background-color: #343a40; /* Cor preta */
+        color: white; /* Texto branco */
+    }
+</style>
