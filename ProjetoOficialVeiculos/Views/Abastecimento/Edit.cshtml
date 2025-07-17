@@ -5,109 +5,117 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-lg p-4">
-        <h2 class="text-center text-dark mb-4">Abastecimento</h2>
-        <hr />
+<div class="container mt-5">
+    <div class="card shadow-lg rounded-4 border-0">
+        <!-- Cabeçalho escuro -->
+        <div class="card-header bg-dark text-white text-center rounded-top-4">
+            <h3 class="mb-0">✏️ Editar Carregamento</h3>
+        </div>
 
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none"></div>
-            <input type="hidden" asp-for="id" />
+        <div class="card-body bg-light">
+            <form asp-action="Edit">
+                <input type="hidden" asp-for="id" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none"></div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label asp-for="caminhaoID" class="form-label">Caminhão</label>
-                    <select asp-for="caminhaoID" class="form-select" asp-items="ViewBag.caminhaoID"></select>
-                    <span asp-validation-for="caminhaoID" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label asp-for="empresaID" class="form-label">Empresa</label>
-                    <select asp-for="empresaID" class="form-select" asp-items="ViewBag.empresaID"></select>
-                    <span asp-validation-for="empresaID" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label asp-for="MaterialID" class="form-label">Material</label>
-                    <select asp-for="MaterialID" class="form-select" asp-items="ViewBag.MaterialID"></select>
-                    <span asp-validation-for="MaterialID" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label asp-for="DataAgendamento" class="form-label">Data do Agendamento</label>
-                    <input asp-for="DataAgendamento" class="form-control" type="datetime-local" />
-                    <span asp-validation-for="DataAgendamento" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label asp-for="PesoCarregado" class="form-label">Peso Carregado (kg)</label>
-                    <input asp-for="PesoCarregado" class="form-control" type="number" step="0.01" />
-                    <span asp-validation-for="PesoCarregado" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Status" class="form-label">Status</label>
-                    <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<ControleOficialVeiculos.Enum.StatusAgendamento>()">
-                        <option value="">Selecione o Status</option>
-                    </select>
-                    <span asp-validation-for="Status" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label asp-for="DataConclusao" class="form-label">Data de Conclusão</label>
-                    <input asp-for="DataConclusao" class="form-control" type="datetime-local" />
-                    <span asp-validation-for="DataConclusao" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label asp-for="OrdemFila" class="form-label">Ordem na Fila</label>
-                    <input asp-for="OrdemFila" class="form-control" type="number" />
-                    <span asp-validation-for="OrdemFila" class="text-danger"></span>
-                </div>
-
-                <!-- Campo Motorista (Seleção com Botão para Adicionar Novo) -->
-                <div class="col-md-6 mb-3">
-                    <label asp-for="MotoristaID" class="form-label">Motorista</label>
-                    <div class="input-group">
-                        <select asp-for="MotoristaID" class="form-select" asp-items="ViewBag.MotoristaID">
-                            <option value="">Selecione o Motorista</option>
-                        </select>
-                        <button type="button" class="btn btn-outline-secondary" onclick="mostrarNovoMotorista()">+</button>
+                <div class="row g-3">
+                    <!-- Caminhão -->
+                    <div class="col-md-6">
+                        <label asp-for="caminhaoID" class="form-label fw-semibold">Caminhão</label>
+                        <select asp-for="caminhaoID" class="form-select" asp-items="ViewBag.caminhaoID"></select>
+                        <span asp-validation-for="caminhaoID" class="text-danger"></span>
                     </div>
-                    <span asp-validation-for="MotoristaID" class="text-danger"></span>
+
+                    <!-- Empresa -->
+                    <div class="col-md-6">
+                        <label asp-for="empresaID" class="form-label fw-semibold">Empresa</label>
+                        <select asp-for="empresaID" class="form-select" asp-items="ViewBag.empresaID"></select>
+                        <span asp-validation-for="empresaID" class="text-danger"></span>
+                    </div>
+
+                    <!-- Material -->
+                    <div class="col-md-6">
+                        <label asp-for="MaterialID" class="form-label fw-semibold">Material</label>
+                        <select asp-for="MaterialID" class="form-select" asp-items="ViewBag.MaterialID"></select>
+                        <span asp-validation-for="MaterialID" class="text-danger"></span>
+                    </div>
+
+                    <!-- Data Agendamento -->
+                    <div class="col-md-6">
+                        <label asp-for="DataAgendamento" class="form-label fw-semibold">Data do Agendamento</label>
+                        <input asp-for="DataAgendamento" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="DataAgendamento" class="text-danger"></span>
+                    </div>
+
+                    <!-- Peso Carregado -->
+                    <div class="col-md-6">
+                        <label asp-for="PesoCarregado" class="form-label fw-semibold">Peso Carregado (kg)</label>
+                        <input asp-for="PesoCarregado" type="number" step="0.01" class="form-control" />
+                        <span asp-validation-for="PesoCarregado" class="text-danger"></span>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-6">
+                        <label asp-for="Status" class="form-label fw-semibold">Status</label>
+                        <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<ControleOficialVeiculos.Enum.StatusAgendamento>()">
+                            <option value="">Selecione o Status</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+
+                    <!-- Data Conclusão -->
+                    <div class="col-md-6">
+                        <label asp-for="DataConclusao" class="form-label fw-semibold">Data de Conclusão</label>
+                        <input asp-for="DataConclusao" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="DataConclusao" class="text-danger"></span>
+                    </div>
+
+                    <!-- Ordem Fila -->
+                    <div class="col-md-6">
+                        <label asp-for="OrdemFila" class="form-label fw-semibold">Ordem na Fila</label>
+                        <input asp-for="OrdemFila" type="number" class="form-control" />
+                        <span asp-validation-for="OrdemFila" class="text-danger"></span>
+                    </div>
+
+                    <!-- Motorista -->
+                    <div class="col-md-6">
+                        <label asp-for="MotoristaID" class="form-label fw-semibold">Motorista</label>
+                        <div class="input-group">
+                            <select asp-for="MotoristaID" class="form-select" asp-items="ViewBag.MotoristaID">
+                                <option value="">Selecione o Motorista</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-dark" onclick="mostrarNovoMotorista()">+</button>
+                        </div>
+                        <span asp-validation-for="MotoristaID" class="text-danger"></span>
+                    </div>
+
+                    <!-- Novo Motorista -->
+                    <div class="col-md-6" id="novoMotoristaDiv" style="display:none;">
+                        <label for="novoMotoristaNome" class="form-label fw-semibold">Novo Motorista</label>
+                        <input type="text" id="novoMotoristaNome" name="novoMotoristaNome" class="form-control" placeholder="Nome do novo motorista" />
+                    </div>
                 </div>
 
-                <!-- Campo para Inserir Novo Motorista (invisível por padrão) -->
-                <div class="col-md-6 mb-3" id="novoMotoristaDiv" style="display:none;">
-                    <label for="novoMotoristaNome" class="form-label">Novo Motorista:</label>
-                    <input type="text" id="novoMotoristaNome" name="novoMotoristaNome" class="form-control" />
+                <!-- Botões -->
+                <div class="text-center mt-5">
+                    <button type="submit" class="btn btn-dark btn-lg px-4">
+                        💾 Salvar
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-dark btn-lg px-4 ms-3">
+                        🔙 Voltar
+                    </a>
                 </div>
-            </div>
-
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-success px-4 py-2">💾 Salvar</button>
-                <a asp-action="Index" class="btn btn-secondary px-4 py-2 ms-3">🔙 Voltar</a>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 
-    <script type="text/javascript">
-        // Função para mostrar o campo de novo motorista
+    <script>
         function mostrarNovoMotorista() {
-            console.log("Botão clicado!"); // Log para depuração
-            var novoMotoristaDiv = document.getElementById("novoMotoristaDiv");
-            // Alterna a exibição do campo de novo motorista
-            if (novoMotoristaDiv.style.display === "none") {
-                novoMotoristaDiv.style.display = "block"; // Exibe o campo
-            } else {
-                novoMotoristaDiv.style.display = "none"; // Oculta o campo se já estiver visível
-            }
+            const div = document.getElementById("novoMotoristaDiv");
+            div.style.display = div.style.display === "none" ? "block" : "none";
         }
     </script>
 }

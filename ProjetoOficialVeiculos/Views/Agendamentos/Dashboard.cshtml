@@ -2,137 +2,247 @@
     ViewData["Title"] = "Dashboard de Agendamentos";
 }
 
-<div class="mb-3">
-    <a asp-controller="Home" asp-action="Index"
-       class="btn btn-outline-secondary px-4 py-2 shadow-sm rounded-pill transition"
-       style="display: inline-flex; align-items: center; gap: 8px;">
-        <i class="fas fa-arrow-left"></i>
-        <span>Voltar para Início</span>
-    </a>
-</div>
-
-@if (ViewBag.Message != null)
-{
-    <div class="alert alert-warning">
-        @ViewBag.Message
+<div class="dashboard-container">
+    <!-- Botão Voltar -->
+    <div class="mb-3">
+        <a asp-controller="Home" asp-action="Index"
+           class="btn btn-outline-secondary px-4 py-2 shadow-sm rounded-pill transition"
+           style="display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fas fa-arrow-left"></i>
+            <span>Voltar para Início</span>
+        </a>
     </div>
-}
 
-<!-- Filtro de Meses e Ano -->
-<form asp-action="Dashboard" method="get" class="row mb-4 g-3 align-items-end">
-    <div class="col-md-6">
-        <label class="form-label">Meses</label>
-        <div class="row">
-            @for (int i = 1; i <= 12; i++)
-            {
-                var nomeMes = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i);
-                var isChecked = ViewBag.Meses != null && ViewBag.Meses.Contains(i);
-                <div class="col-6 col-sm-4 col-md-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="meses" value="@i" id="mes@i" @(isChecked ? "checked" : "") />
-                        <label class="form-check-label" for="mes@i">@nomeMes</label>
+    <!-- Mensagem de Alerta -->
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-warning">
+            @ViewBag.Message
+        </div>
+    }
+
+    <!-- Filtros Avançados -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Filtros</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Dashboard" method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Meses</label>
+                    <div class="row month-checkboxes">
+                        @for (int i = 1; i <= 12; i++)
+                        {
+                            var nomeMes = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i);
+                            var isChecked = ViewBag.Meses != null && ViewBag.Meses.Contains(i);
+                            <div class="col-6 col-sm-4 col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="meses" value="@i" id="mes@i" @(isChecked ? "checked" : "") />
+                                    <label class="form-check-label" for="mes@i">@nomeMes</label>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
-            }
+                <div class="col-md-4">
+                    <label class="form-label">Ano</label>
+                    <select name="ano" class="form-select">
+                        @for (int year = DateTime.Now.Year; year >= DateTime.Now.Year - 5; year--)
+                        {
+                            <option value="@year" selected="@(year == ViewBag.Ano)">@year</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Aplicar</button>
+                </div>
+            </form>
         </div>
     </div>
-    <div class="col-md-3">
-        <label class="form-label">Ano</label>
-        <input type="number" name="ano" class="form-control" value="@ViewBag.Ano" />
-    </div>
-    <div class="col-md-3 d-grid">
-        <label class="form-label invisible">Filtrar</label>
-        <button type="submit" class="btn btn-primary">Filtrar</button>
-    </div>
-</form>
 
-<!-- Cartões de Totais -->
-<div class="row mb-4">
-    <div class="col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Total Agendamentos</h5>
-                <p id="totalAgendamentos">@ViewBag.StatusData.total</p>
+    <!-- Cartões de Totais -->
+    <div class="row mb-4">
+        <div class="col-sm-6 col-md-3 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Agendamentos</h5>
+                    <p class="display-5 text-primary fw-bold" id="totalAgendamentos">@ViewBag.StatusData.total</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Pendente</h5>
+                    <p class="display-5 text-warning fw-bold">@ViewBag.StatusData.pendente</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Concluído</h5>
+                    <p class="display-5 text-success fw-bold">@ViewBag.StatusData.concluido</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Cancelado</h5>
+                    <p class="display-5 text-danger fw-bold">@ViewBag.StatusData.cancelado</p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Pendente</h5>
-                <p>@ViewBag.StatusData.pendente</p>
+
+    <!-- Gráficos -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Distribuição por Status</h5>
+                    <div class="chart-container">
+                        <canvas id="statusPieChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Concluído</h5>
-                <p>@ViewBag.StatusData.concluido</p>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Agendamentos por Empresa</h5>
+                    <div class="chart-container">
+                        <canvas id="empresaBarChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Cancelado</h5>
-                <p>@ViewBag.StatusData.cancelado</p>
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Agendamentos por Dia</h5>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="toggleAno" checked>
+                            <label class="form-check-label" for="toggleAno">Mostrar anos</label>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="lineChartPorDia"></canvas>
+                    </div>
+                    <div class="text-center mt-2 text-muted small" id="dateRangeInfo"></div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Gráficos -->
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="card-title">Distribuição por Status</h6>
-                <canvas id="statusPieChart" height="300"></canvas>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="card-title">Agendamentos por Empresa</h6>
-                <canvas id="empresaBarChart" height="300"></canvas>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="card-title">Agendamentos por Dia</h6>
-                <canvas id="lineChartPorDia" height="75"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
+@section Styles {
+    <style>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .month-checkboxes {
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 5px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .display-5 {
+            font-size: 2rem;
+        }
+
+        .form-switch .form-check-input {
+            width: 3em;
+            height: 1.5em;
+        }
+    </style>
+}
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         var statusData = @Html.Raw(Json.Serialize(ViewBag.StatusData));
 
+        // Format dates for line chart
+        function formatDateLabels(daysData, showYear) {
+            const currentYear = new Date().getFullYear();
+            return daysData.map((_, index) => {
+                const date = new Date();
+                date.setDate(index + 1);
+                return date.toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: showYear ? '2-digit' : undefined
+                }).replace('.', '');
+            });
+        }
+
+        // Update date range info
+        function updateDateRangeInfo() {
+            const daysCount = statusData.porDia.length;
+            const total = statusData.porDia.reduce((a, b) => a + b, 0);
+            const average = (total / daysCount).toFixed(1);
+
+            document.getElementById('dateRangeInfo').textContent =
+                `Período: ${daysCount} dias | Total: ${total} agendamentos | Média diária: ${average}`;
+        }
+
         // Gráfico de Pizza (Status)
         new Chart(document.getElementById('statusPieChart'), {
             type: 'pie',
             data: {
-                labels: ['Aguardando Liberação', 'Concluído', 'Cancelado' , 'Em Carregamento'],
+                labels: ['Pendente', 'Concluído', 'Cancelado'],
                 datasets: [{
                     data: [
                         Math.round(statusData.pendente),
                         Math.round(statusData.concluido),
                         Math.round(statusData.cancelado)
                     ],
-                    backgroundColor: ['#ffc107', '#28a745', '#dc3545']
+                    backgroundColor: ['#ffc107', '#28a745', '#dc3545'],
+                    borderWidth: 1
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom' }
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -143,47 +253,128 @@
             data: {
                 labels: statusData.empresasLabels,
                 datasets: [{
-                    label: 'Qtd por Empresa',
+                    label: 'Agendamentos',
                     data: statusData.empresasData.map(x => Math.round(x)),
-                    backgroundColor: '#007bff'
+                    backgroundColor: '#4a90e2',
+                    borderColor: '#2a6fc9',
+                    borderWidth: 1
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
-                        title: { display: true, text: 'Quantidade' },
-                        ticks: { stepSize: 1, precision: 0 }
+                        title: {
+                            display: true,
+                            text: 'Quantidade',
+                            font: {
+                                weight: 'bold'
+                            }
+                        },
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
                     }
                 }
             }
         });
 
         // Gráfico de Linha (Por Dia)
-        new Chart(document.getElementById('lineChartPorDia'), {
+        let lineChart = new Chart(document.getElementById('lineChartPorDia'), {
             type: 'line',
             data: {
-                labels: Array.from({ length: statusData.porDia.length }, (_, i) => i + 1),
+                labels: formatDateLabels(statusData.porDia, true),
                 datasets: [{
                     label: 'Agendamentos por Dia',
                     data: statusData.porDia.map(x => Math.round(x)),
-                    borderColor: '#007bff',
-                    fill: false,
-                    tension: 0.3
+                    borderColor: '#4a90e2',
+                    backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#4a90e2',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.2
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                const date = new Date();
+                                date.setDate(context[0].dataIndex + 1);
+                                return date.toLocaleDateString('pt-BR', {
+                                    weekday: 'long',
+                                    day: '2-digit',
+                                    month: 'long',
+                                    year: 'numeric'
+                                });
+                            },
+                            label: function(context) {
+                                return `Agendamentos: ${context.raw}`;
+                            }
+                        }
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
                 scales: {
-                    x: { title: { display: true, text: 'Dia' } },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Dias do Mês',
+                            font: {
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
                     y: {
                         beginAtZero: true,
-                        title: { display: true, text: 'Quantidade' },
-                        ticks: { stepSize: 1, precision: 0 }
+                        title: {
+                            display: true,
+                            text: 'Quantidade',
+                            font: {
+                                weight: 'bold'
+                            }
+                        },
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        }
                     }
                 }
             }
         });
+
+        // Toggle para mostrar/ocultar ano nos labels
+        document.getElementById('toggleAno').addEventListener('change', function() {
+            lineChart.data.labels = formatDateLabels(statusData.porDia, this.checked);
+            lineChart.update();
+        });
+
+        // Atualizar informações do período
+        updateDateRangeInfo();
     </script>
 }

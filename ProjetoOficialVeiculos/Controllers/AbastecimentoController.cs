@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProjetoOficialVeiculos.Models;
+using Microsoft.Extensions.Logging;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 
 namespace ProjetoOficialVeiculos.Controllers
 {
@@ -15,10 +17,12 @@ namespace ProjetoOficialVeiculos.Controllers
     public class AbastecimentoController : Controller
     {
         private readonly Contexto _context;
+        private readonly ILogger<AbastecimentoController> _logger;
 
         public AbastecimentoController(Contexto context)
         {
             _context = context;
+            
         }
 
         // GET: Abastecimento
@@ -390,12 +394,27 @@ namespace ProjetoOficialVeiculos.Controllers
 
                     _context.Update(agendamentoExistente);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("listAbastecimento");
+
+                    // Mensagem de sucesso
+                    TempData["SuccessMessage"] = "Status do abastecimento atualizado com sucesso!";
+                    return RedirectToAction("DetalhesAbastecimento", new { id = agendamentoExistente.id });
                 }
-                catch
+                catch (DbUpdateException ex)
                 {
-                    ModelState.AddModelError("", "Erro ao atualizar o status.");
+                    // Log do erro (opcional)
+                    _logger.LogError(ex, "Erro ao atualizar status do abastecimento");
+
+                    ModelState.AddModelError("", "Ocorreu um erro ao salvar as alterações. Por favor, tente novamente.");
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Erro inesperado ao atualizar status");
+                    ModelState.AddModelError("", "Ocorreu um erro inesperado. Contate o suporte técnico.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Por favor, corrija os erros no formulário.");
             }
 
             // Recarrega a lista restrita se algo falhar
