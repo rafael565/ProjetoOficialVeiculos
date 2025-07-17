@@ -2,22 +2,341 @@
 
 @{
     ViewData["Title"] = "ChamarParaBalanca";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null; // Removemos o layout para controle total da tela
 }
 
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chamada para Balança</title>
+    <style>
+        :root {
+            --primary-color: #1a2a6c;
+            --secondary-color: #b21f1f;
+            --accent-color: #fdbb2d;
+        }
 
-<div class="container mt-4">
-    <div class="card p-4 shadow">
-        <h2 class="text-center mb-3">🚛 Caminhão Autorizado para Balança</h2>
-        <hr />
-        <h4><strong>Placa do Caminhão:</strong> @Model.caminhao.placa</h4>
-        <h4><strong>Empresa:</strong> @Model.empresa.nome</h4>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), #2a5298);
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .fullscreen-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .datetime {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .control-btn:hover {
+                background-color: rgba(255, 255, 255, 0.3);
+                transform: scale(1.05);
+            }
+
+            .control-btn i {
+                font-size: 1.2rem;
+            }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .truck-icon {
+            font-size: 6rem;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        .title {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--accent-color), #f12711);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .info-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            backdrop-filter: blur(5px);
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .info-label {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .info-value {
+            font-size: 2.8rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .placa-value {
+            font-size: 4rem;
+            letter-spacing: 8px;
+            background: linear-gradient(90deg, var(--accent-color), #f12711);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+        }
+
+        @@keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        }
+
+        @@keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        /* Ícones usando Unicode */
+        .icon::before {
+            font-family: 'Segoe UI Emoji';
+        }
+
+        .fullscreen::before {
+            content: "⛶";
+        }
+
+        .volume::before {
+            content: "🔊";
+        }
+
+        .back::before {
+            content: "↩";
+        }
+    </style>
+</head>
+<body>
+    <div class="fullscreen-container">
+        <!-- Cabeçalho com controles -->
+        <div class="header">
+            <div id="currentDateTime" class="datetime">
+                <span id="currentDate"></span> - <span id="currentTime" class="blink"></span>
+            </div>
+
+            <div class="controls">
+                <button id="repeatBtn" class="control-btn" title="Repetir mensagem de voz">
+                    <span class="icon volume"></span> Repetir
+                </button>
+                <button id="fullscreenBtn" class="control-btn" title="Tela cheia">
+                    <span class="icon fullscreen"></span> Tela Cheia
+                </button>
+                <a href="/Abastecimento/Index" class="control-btn" title="Voltar">
+                    <span class="icon back"></span> Voltar
+                </a>
+            </div>
+        </div>
+
+        <!-- Conteúdo principal -->
+        <div class="content">
+            <div class="truck-icon">🚛</div>
+            <h1 class="title">AUTORIZADO</h1>
+            <h2 class="subtitle">PARA PESAGEM NA BALANÇA</h2>
+
+            <div class="info-card">
+                <div class="info-label">PLACA DO VEÍCULO</div>
+                <div class="placa-value">@Model.caminhao.placa</div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-label">EMPRESA</div>
+                <div class="info-value">@Model.empresa.nome</div>
+            </div>
+        </div>
     </div>
-</div>
-<div>
-    <a asp-action="Index">Voltar</a>
-</div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    <script>
+        let currentPlaca = '@Model.caminhao.placa';
+        let currentEmpresa = '@Model.empresa.nome';
+
+        // Atualiza a data e hora
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('pt-BR');
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('pt-BR');
+        }
+
+        // Fala um texto e executa um callback ao terminar
+        function falarTexto(texto, velocidade = 0.7, callback = null) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(texto);
+                utterance.lang = 'pt-BR';
+                utterance.rate = velocidade;
+                utterance.pitch = 1.0;
+
+                // Seleciona voz Google pt-BR se disponível
+                const voices = window.speechSynthesis.getVoices();
+                const vozGoogle = voices.find(v => v.lang === 'pt-BR' && v.name.includes("Google"));
+                if (vozGoogle) utterance.voice = vozGoogle;
+
+                if (callback) {
+                    utterance.onend = callback;
+                }
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Fala a placa letra por letra, como uma sequência
+        function falarPlaca(placa, callback) {
+            const letras = placa.replace(/[^a-zA-Z0-9]/g, '').split('');
+            let i = 0;
+
+            function falarProximaLetra() {
+                if (i < letras.length) {
+                    falarTexto(letras[i], 0.75, () => {
+                        i++;
+                        setTimeout(falarProximaLetra, 50); // pequeno intervalo entre letras
+                    });
+                } else if (callback) {
+                    callback(); // tudo lido
+                }
+            }
+
+            falarProximaLetra();
+        }
+
+        // Sequência completa com fala em cadeia
+        function playAudioSequence() {
+            window.speechSynthesis.cancel(); // Cancela qualquer fala anterior
+
+            falarTexto("Atenção. Caminhão autorizado para pesagem.", 0.75, () => {
+                falarTexto("Placa:", 0.75, () => {
+                    falarPlaca(currentPlaca, () => {
+                        falarTexto(`Empresa: ${currentEmpresa}`, 0.7, () => {
+                            falarTexto("Confirmação. Caminhão autorizado.", 0.7, () => {
+                                falarTexto("Placa:", 0.7, () => {
+                                    falarPlaca(currentPlaca);
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        }
+
+        // Tela cheia
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(`Erro ao tentar entrar em tela cheia: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Data/hora
+            setInterval(updateDateTime, 1000);
+            updateDateTime();
+
+            // Tela cheia
+            toggleFullscreen();
+            document.getElementById('fullscreenBtn')?.addEventListener('click', toggleFullscreen);
+
+            // Botão repetir
+            document.getElementById('repeatBtn')?.addEventListener('click', playAudioSequence);
+
+            // Iniciar áudio
+            // Espera as vozes carregarem (importante para Google Voice)
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = playAudioSequence;
+            } else {
+                playAudioSequence();
+            }
+        });
+    </script>
+
+</body>
+</html>

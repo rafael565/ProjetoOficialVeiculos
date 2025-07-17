@@ -170,13 +170,13 @@
                 el.innerHTML = `<span style="color:green">${horas}h ${minutos}min restantes</span>`;
             } else {
                 el.innerHTML = `
-                    <form method="get" action="/Abastecimento/ChamarParaBalanca">
-                        <input type="hidden" name="id" value="${id}" />
-                        <button style="background-color: #f0ad4e; color: white; border: none; padding: 7px 13px;display: flex; flex-direction: column; align-items: center;border-radius: 5px; font-family: sans-serif; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <span style="font-size: 1.0em; line-height: 1;">📣</span>
-                        <span style="margin-top: 2px; font-size: 0.75em;">Chamar</span>
-                        </button>
-                    </form>
+                      <form method="get" action="/Abastecimento/ChamarParaBalanca" target="_blank">
+                      <input type="hidden" name="id" value="${id}" />
+                      <button style="background-color: #f0ad4e; color: white; border: none; padding: 7px 13px; display: flex; flex-direction: column; align-items: center; border-radius: 5px; font-family: sans-serif; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                      <span style="font-size: 1.0em; line-height: 1;">📣</span>
+                      <span style="margin-top: 2px; font-size: 0.75em;">Chamar</span>
+                       </button>
+                       </form>
                 `;
             }
         });
