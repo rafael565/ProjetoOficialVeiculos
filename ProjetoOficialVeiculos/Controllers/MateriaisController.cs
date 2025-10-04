@@ -10,7 +10,7 @@ using ProjetoOficialVeiculos.Models;
 
 namespace ProjetoOficialVeiculos.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class MateriaisController : Controller
     {
         private readonly Contexto _context;

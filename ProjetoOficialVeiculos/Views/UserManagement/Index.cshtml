@@ -1,0 +1,63 @@
+﻿@model List<ProjetoOficialVeiculos.Models.Account.UserWithRolesViewModel>
+@{
+    ViewData["Title"] = "Gerenciamento de Usuários";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Permissões</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Email</td>
+                    <td>
+                        @if (user.Roles.Any())
+                        {
+                            @string.Join(", ", user.Roles)
+                        }
+                        else
+                        {
+                            <span class="text-muted">Nenhuma permissão</span>
+                        }
+                    </td>
+                    <td>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="userId" value="@user.UserId" />
+                            <button type="submit" class="btn btn-sm btn-success me-1"
+                                    asp-controller="UserManagement" asp-action="AddRole"
+                                    asp-route-role="Admin">
+                                Tornar Admin
+                            </button>
+                            <button type="submit" class="btn btn-sm btn-primary me-1"
+                                    asp-controller="UserManagement" asp-action="AddRole"
+                                    asp-route-role="Faturar">
+                                Permitir Faturar
+                            </button>
+                            <button type="submit" class="btn btn-sm btn-info me-1"
+                                    asp-controller="UserManagement" asp-action="AddRole"
+                                    asp-route-role="Carregar">
+                                Permitir Carregar
+                            </button>
+                            @if (user.Roles.Any())
+                            {
+                                <button type="submit" class="btn btn-sm btn-danger"
+                                        asp-controller="UserManagement" asp-action="RemoveRole"
+                                        asp-route-role="@user.Roles.First()">
+                                    Remover Permissão
+                                </button>
+                            }
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

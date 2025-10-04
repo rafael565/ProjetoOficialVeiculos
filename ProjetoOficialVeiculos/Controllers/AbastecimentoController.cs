@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 
 namespace ProjetoOficialVeiculos.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class AbastecimentoController : Controller
     {
         private readonly Contexto _context;

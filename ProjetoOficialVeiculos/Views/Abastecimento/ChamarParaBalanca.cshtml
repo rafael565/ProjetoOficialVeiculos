@@ -239,7 +239,7 @@
         let currentPlaca = '@Model.caminhao.placa';
         let currentEmpresa = '@Model.empresa.nome';
 
-        // Atualiza a data e hora
+      
         function updateDateTime() {
             const now = new Date();
             document.getElementById('currentDate').textContent = now.toLocaleDateString('pt-BR');
@@ -254,7 +254,7 @@
                 utterance.rate = velocidade;
                 utterance.pitch = 1.0;
 
-                // Seleciona voz Google pt-BR se disponível
+                // voz Google pt-BR 
                 const voices = window.speechSynthesis.getVoices();
                 const vozGoogle = voices.find(v => v.lang === 'pt-BR' && v.name.includes("Google"));
                 if (vozGoogle) utterance.voice = vozGoogle;
@@ -267,7 +267,7 @@
             }
         }
 
-        // Fala a placa letra por letra, como uma sequência
+     
         function falarPlaca(placa, callback) {
             const letras = placa.replace(/[^a-zA-Z0-9]/g, '').split('');
             let i = 0;
@@ -276,10 +276,10 @@
                 if (i < letras.length) {
                     falarTexto(letras[i], 0.75, () => {
                         i++;
-                        setTimeout(falarProximaLetra, 50); // pequeno intervalo entre letras
+                        setTimeout(falarProximaLetra, 50); 
                     });
                 } else if (callback) {
-                    callback(); // tudo lido
+                    callback(); 
                 }
             }
 
