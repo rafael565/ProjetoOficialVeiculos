@@ -30,8 +30,18 @@
 <h1 class="text-center text-primary display-4">Agendamentos</h1>
 
 <div class="mb-4 text-center">
-    <a class="btn btn-success mx-2" asp-controller="Agendamentos" asp-action="Exportar">
-        <i class="bi bi-file-earmark-plus"></i> Exportar
+    @{
+        var dataAgendamentoFiltro = ViewBag.DataAgendamentoFiltro as string;
+        var dataConclusaoFiltro = ViewBag.DataConclusaoFiltro as string;
+        var statusFiltro = ViewBag.StatusFiltro as string;
+    }
+
+    <a href="@Url.Action("Exportar", "Agendamentos", new {
+    dataAgendamentoFiltro = dataAgendamentoFiltro,
+    dataConclusaoFiltro = dataConclusaoFiltro,
+    statusFiltro = statusFiltro
+})" class="btn btn-success">
+        Exportar para Excel
     </a>
     <a class="btn btn-primary" asp-action="Create">
         <i class="bi bi-plus-circle"></i> Criar Novo Agendamento

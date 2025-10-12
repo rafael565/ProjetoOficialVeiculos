@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ProjetoOficialVeiculos.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Faturar")]
     public class AgendamentosController : Controller
     {
         private readonly Contexto _context;
@@ -37,11 +37,25 @@ namespace ProjetoOficialVeiculos.Controllers
             ViewData["MotoristaID"] = new SelectList(_context.Motoristas, "id", "nome", agendamento?.MotoristaID);
         }
 
-        // Método para exportar para Excel
-        public IActionResult Exportar()
+        // Método para exportar para Excel COM FILTROS - CORRIGIDO
+        public IActionResult Exportar(string dataAgendamentoFiltro, string dataConclusaoFiltro, string statusFiltro)
         {
-            // Obtém os dados
-            var dataTable = GetDados();
+            // Converte os parâmetros string para os tipos corretos
+            DateTime? dataAgendamento = null;
+            DateTime? dataConclusao = null;
+
+            if (!string.IsNullOrEmpty(dataAgendamentoFiltro) && DateTime.TryParse(dataAgendamentoFiltro, out var dataAgendamentoTemp))
+            {
+                dataAgendamento = dataAgendamentoTemp;
+            }
+
+            if (!string.IsNullOrEmpty(dataConclusaoFiltro) && DateTime.TryParse(dataConclusaoFiltro, out var dataConclusaoTemp))
+            {
+                dataConclusao = dataConclusaoTemp;
+            }
+
+            // Obtém os dados FILTRADOS usando a mesma lógica do Index
+            var dataTable = GetDadosFiltrados(dataAgendamento, dataConclusao, statusFiltro);
 
             // Cria o pacote Excel
             using (var package = new ExcelPackage())
@@ -61,6 +75,20 @@ namespace ProjetoOficialVeiculos.Controllers
                     range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 }
 
+                // FORMATAÇÃO ESPECÍFICA PARA DATAS - CORREÇÃO DO PROBLEMA
+                // Formata as colunas de data como DateTime
+                for (int i = 0; i < dataTable.Columns.Count; i++)
+                {
+                    if (dataTable.Columns[i].ColumnName == "DataAgendamento" || dataTable.Columns[i].ColumnName == "DataConclusao")
+                    {
+                        // Formata a coluna inteira como data
+                        using (var range = worksheet.Cells[2, i + 1, dataTable.Rows.Count + 1, i + 1])
+                        {
+                            range.Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+                        }
+                    }
+                }
+
                 // Formatação das células (bordas e ajuste de tamanho das colunas)
                 worksheet.Cells.AutoFitColumns();
 
@@ -75,18 +103,17 @@ namespace ProjetoOficialVeiculos.Controllers
 
                 // Configura o nome do arquivo e a resposta
                 var fileBytes = package.GetAsByteArray();
-                var fileName = "Agendamentos.xlsx";
+                var fileName = $"Agendamentos_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
                 return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
         }
 
-        // Método para preencher o DataTable com os dados dos agendamentos
-        private DataTable GetDados()
+        // Método para preencher o DataTable com os dados FILTRADOS dos agendamentos
+        private DataTable GetDadosFiltrados(DateTime? dataAgendamento, DateTime? dataConclusao, string status)
         {
             DataTable dataTable = new DataTable();
             dataTable.TableName = "Dados Veiculos";
 
-            // Adiciona as colunas no DataTable
             dataTable.Columns.Add("CaminhaoID", typeof(string));
             dataTable.Columns.Add("Empresa", typeof(string));
             dataTable.Columns.Add("Material", typeof(string));
@@ -97,14 +124,33 @@ namespace ProjetoOficialVeiculos.Controllers
             dataTable.Columns.Add("OrdemFila", typeof(int));
             dataTable.Columns.Add("Motorista", typeof(string));
 
-            // Preenche o DataTable com dados dos agendamentos
-            var dados = _context.Agendamentos
+            // Obtém os dados APLICANDO OS MESMOS FILTROS do Index
+            var query = _context.Agendamentos
                 .Include(a => a.caminhao)
                 .Include(a => a.empresa)
                 .Include(a => a.material)
                 .Include(a => a.motorista)
-                .ToList();
+                .AsQueryable();
 
+            // Aplica os mesmos filtros do Index
+            if (dataAgendamento.HasValue)
+            {
+                query = query.Where(a => a.DataAgendamento.Date == dataAgendamento.Value.Date);
+            }
+
+            if (dataConclusao.HasValue)
+            {
+                query = query.Where(a => a.DataConclusao.Date == dataConclusao.Value.Date);
+            }
+
+            if (!string.IsNullOrEmpty(status) && Enum.TryParse<StatusAgendamento>(status, true, out var statusEnum))
+            {
+                query = query.Where(a => a.Status == statusEnum);
+            }
+
+            var dados = query.ToList();
+
+            // Preenche o DataTable com dados dos agendamentos FILTRADOS
             foreach (var agendamento in dados)
             {
                 dataTable.Rows.Add(
@@ -123,7 +169,7 @@ namespace ProjetoOficialVeiculos.Controllers
             return dataTable;
         }
 
-        // GET: Agendamentos (com filtros de data e status)
+        // GET: Agendamentos (com filtros de data e status) - CORRIGIDO
         public async Task<IActionResult> Index(DateTime? dataAgendamento, DateTime? dataConclusao, string status)
         {
             var contexto = _context.Agendamentos
@@ -145,19 +191,23 @@ namespace ProjetoOficialVeiculos.Controllers
                 contexto = contexto.Where(a => a.DataConclusao.Date == dataConclusao.Value.Date);
             }
 
-
-
             // Filtro por status, se fornecido
             if (!string.IsNullOrEmpty(status) && Enum.TryParse<StatusAgendamento>(status, true, out var statusEnum))
             {
                 contexto = contexto.Where(a => a.Status == statusEnum);
             }
 
-            ViewBag.StatusList = new SelectList(new List<string> { "Aguardando Liberação", "Concluido", "Cancelado" , "Em Carregamento",  });
+            ViewBag.StatusList = new SelectList(new List<string> { "Aguardando Liberação", "Concluido", "Cancelado", "Em Carregamento" });
+
+            // CORREÇÃO: Passa os filtros como strings para a View
+            ViewBag.DataAgendamentoFiltro = dataAgendamento?.ToString("yyyy-MM-dd");
+            ViewBag.DataConclusaoFiltro = dataConclusao?.ToString("yyyy-MM-dd");
+            ViewBag.StatusFiltro = status;
 
             return View(await contexto.ToListAsync());
         }
-        
+
+      
         // GET: Agendamentos/Create
         public IActionResult Create()
         {
@@ -303,7 +353,6 @@ namespace ProjetoOficialVeiculos.Controllers
             return Json(new { id = caminhao.id, placa = caminhao.placa });
         }
 
-
         // GET: Agendamentos/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -346,6 +395,7 @@ namespace ProjetoOficialVeiculos.Controllers
         {
             return _context.Agendamentos.Any(e => e.id == id);
         }
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -354,10 +404,10 @@ namespace ProjetoOficialVeiculos.Controllers
             }
 
             var agendamento = await _context.Agendamentos
-                .Include(a => a.caminhao)       
-                .Include(a => a.empresa)       
-                .Include(a => a.material)      
-                .Include(a => a.motorista)      
+                .Include(a => a.caminhao)
+                .Include(a => a.empresa)
+                .Include(a => a.material)
+                .Include(a => a.motorista)
                 .FirstOrDefaultAsync(m => m.id == id);
 
             if (agendamento == null)
@@ -367,7 +417,6 @@ namespace ProjetoOficialVeiculos.Controllers
 
             return View(agendamento);
         }
-
 
         public async Task<IActionResult> List(DateTime? dataAgendamento, string status)
         {
@@ -391,7 +440,7 @@ namespace ProjetoOficialVeiculos.Controllers
                 contexto = contexto.Where(a => a.Status == statusEnum);
             }
 
-            ViewBag.StatusList = new SelectList(new List<string> { "Aguardando Liberação", "Concluido", "Cancelado" , "Em Carregamento", });
+            ViewBag.StatusList = new SelectList(new List<string> { "Aguardando Liberação", "Concluido", "Cancelado", "Em Carregamento" });
 
             return View(await contexto.ToListAsync());
         }
@@ -459,9 +508,5 @@ namespace ProjetoOficialVeiculos.Controllers
 
             return View();
         }
-
-
-
     }
-
 }

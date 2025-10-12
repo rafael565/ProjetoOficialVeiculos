@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 
 namespace ProjetoOficialVeiculos.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Faturar")]
     public class AbastecimentoController : Controller
     {
         private readonly Contexto _context;
@@ -218,7 +218,7 @@ namespace ProjetoOficialVeiculos.Controllers
                             .Select(c => c.placa)
                             .FirstOrDefault();
 
-                        string corpo = $"🚛 Abastecimento Finalizado para Faturamento!\n\n" +
+                        string corpo = $"🚛 Abastecimento Finalizado!\n\n" +
                                        $"📅 Data: {agendamento.DataAgendamento:dd/MM/yyyy HH:mm}\n" +
                                        $"🚚 Caminhão: {placa}\n" +
                                        $"⛽ Peso Carregado: {agendamento.PesoCarregado} Kg\n" +
