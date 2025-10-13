@@ -7,8 +7,10 @@
 }
 
 @functions {
-    public string GetBadgeClass(ControleOficialVeiculos.Enum.StatusAgendamento status)
+    public string GetBadgeClass(ControleOficialVeiculos.Enum.StatusAgendamento? status)
     {
+        if (status == null) return "bg-secondary";
+
         return status switch
         {
             ControleOficialVeiculos.Enum.StatusAgendamento.Concluido => "bg-success",
@@ -18,94 +20,391 @@
             _ => "bg-secondary"
         };
     }
+
+    public int GetProgressStep(ControleOficialVeiculos.Enum.StatusAgendamento? status)
+    {
+        if (status == null) return 1;
+
+        return status switch
+        {
+            ControleOficialVeiculos.Enum.StatusAgendamento.Carregamento => 2,
+            ControleOficialVeiculos.Enum.StatusAgendamento.Concluido => 3,
+            _ => 2 // Padrão para carregamento
+        };
+    }
+
+    // Método para obter texto seguro de objetos nulos
+    public string GetSafeText(object obj)
+    {
+        return obj?.ToString() ?? "N/A";
+    }
+
+    // Método para obter data formatada segura
+    public string GetSafeDate(DateTime? date)
+    {
+        return date?.ToString("dd/MM/yyyy HH:mm") ?? "N/A";
+    }
+
+    // Método para verificar se deve mostrar o botão Abastecer
+    public bool ShowAbastecerButton(ControleOficialVeiculos.Enum.StatusAgendamento? status)
+    {
+        return status == ControleOficialVeiculos.Enum.StatusAgendamento.Carregamento;
+    }
 }
 
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h1 class="text-center text-dark mb-4">🚛 Lista de Carregamento</h1>
 
-<h1 class="text-center text-primary display-4">Lista Carregamento</h1>
+        <!-- Filtro de Pesquisa -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-auto">
+                <form method="get" asp-action="listAbastecimento" class="d-flex flex-wrap align-items-end gap-2 justify-content-center">
+                    <div class="form-group">
+                        <label for="dataConclusao" class="form-label mb-0">Data De Carregamento:</label>
+                        <input type="date" name="dataConclusao" class="form-control form-control-sm"
+                               value="@Context.Request.Query["dataConclusao"]" />
+                    </div>
 
+                    <div class="form-group">
+                        <label for="status" class="form-label mb-0">Status:</label>
+                        <select name="status" class="form-control form-control-sm">
+                            <option value="">Todos</option>
+                            <option value="Concluido" selected="@(statusSelecionado == "Concluido")">Concluído</option>
+                            <option value="Carregamento" selected="@(statusSelecionado == "Carregamento")">Em Carregamento</option>
+                        </select>
+                    </div>
 
-<div class="row justify-content-center mb-4">
-   <div class="col-auto">
-    <form method="get" asp-action="listAbastecimento" class="d-flex flex-wrap align-items-end gap-2 justify-content-center">
-        <div class="form-group">
-                <label for="dataConclusao" class="form-label mb-0">Data De Carregamento:</label>
-                <input type="date" name="dataConclusao" class="form-control form-control-sm"
-                       value="@Context.Request.Query["dataConclusao"]" />
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-sm btn-primary w-100">
+                            <i class="bi bi-search"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="status" class="form-label mb-0">Status:</label>
-                <select name="status" class="form-control form-control-sm">
-                    <option value="">Todos</option>
-                    <option value="Concluido" selected="@(statusSelecionado == "Concluido")">Concluído</option>
-                    <option value="Cancelado" selected="@(statusSelecionado == "Cancelado")">Cancelado</option>
-                    <option value="Carregamento" selected="@(statusSelecionado == "Carregamento")">Em Carregamento</option>
-                </select>
-        </div>
+        <hr />
 
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-sm btn-primary w-100">
-                <i class="bi bi-search"></i> Filtrar
-            </button>
+        <!-- Lista de Agendamentos com Barra de Progresso -->
+        <div class="row">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-header bg-transparent border-0 pt-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title mb-0 text-dark fw-bold">@GetSafeText(item.caminhao?.placa)</h6>
+                                    <span class="badge @GetBadgeClass(item?.Status)">
+                                        @if (item?.Status != null)
+                                        {
+                                            @Html.DisplayFor(modelItem => item.Status)
+                                        }
+                                        else
+                                        {
+                                            <text>N/A</text>
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <!-- Barra de Progresso Moderna - Apenas Carregamento e Concluído -->
+                                <div class="progress-container mb-3">
+                                    <div class="progress-bar-modern">
+                                        @{
+                                            var progressStep = GetProgressStep(item?.Status);
+                                            var progressPercentage = progressStep switch
+                                            {
+                                                2 => 50,  // Em Carregamento
+                                                3 => 100, // Concluído
+                                                _ => 50   // Padrão
+                                            };
+                                        }
+                                        <div class="progress-track">
+                                            <div class="progress-fill" style="width: @progressPercentage%"></div>
+                                        </div>
+                                        <div class="progress-steps">
+                                            <!-- Removida etapa "Aguardando" -->
+                                            <div class="progress-step @(progressStep >= 2 ? "active" : "")">
+                                                <div class="step-icon">🚛</div>
+                                                <span class="step-label">Carregando</span>
+                                            </div>
+                                            <div class="progress-step @(progressStep >= 3 ? "active" : "")">
+                                                <div class="step-icon">✅</div>
+                                                <span class="step-label">Concluído</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Informações do Agendamento -->
+                                <div class="agendamento-info">
+                                    <div class="info-item">
+                                        <small class="text-muted">Empresa:</small>
+                                        <div class="fw-semibold">@GetSafeText(item.empresa?.nome)</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <small class="text-muted">Material:</small>
+                                        <div class="fw-semibold">@GetSafeText(item.material?.nome)</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <small class="text-muted">Motorista:</small>
+                                        <div class="fw-semibold">@GetSafeText(item.motorista?.nome)</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <small class="text-muted">Data Agendamento:</small>
+                                        <div class="fw-semibold">@GetSafeDate(item?.DataAgendamento)</div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(item?.PesoCarregado))
+                                    {
+                                        <div class="info-item">
+                                            <small class="text-muted">Peso Carregado:</small>
+                                            <div class="fw-semibold text-success">@item.PesoCarregado kg</div>
+                                        </div>
+                                    }
+                                    @if (item?.DataConclusao != null && item.DataConclusao > DateTime.MinValue)
+                                    {
+                                        <div class="info-item">
+                                            <small class="text-muted">Data Conclusão:</small>
+                                            <div class="fw-semibold text-info">@GetSafeDate(item.DataConclusao)</div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-transparent border-0 pb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    @if (item?.id != null)
+                                    {
+                                        if (ShowAbastecerButton(item?.Status))
+                                        {
+                                            <!-- Botão Abastecer - apenas para status "Em Carregamento" -->
+                                            <a class="btn btn-success btn-sm" asp-action="DetalhesAbastecimento" asp-route-id="@item.id">
+                                                <i class="bi bi-droplet"></i> Abastecer
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <!-- Botão Visualizar - para status "Concluído" -->
+                                            <a class="btn btn-info btn-sm" asp-action="DetalhesAbastecimento" asp-route-id="@item.id">
+                                                <i class="bi bi-eye"></i> Visualizar
+                                            </a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-secondary btn-sm" disabled>
+                                            <i class="bi bi-eye"></i> Visualizar
+                                        </button>
+                                    }
+
+                                    <!-- Informações adicionais -->
+                                    <div class="text-end">
+                                        <small class="text-muted d-block">Ordem: @(item?.OrdemFila ?? 0)</small>
+                                        @if (item?.DataConclusao != null && item.DataConclusao > DateTime.MinValue)
+                                        {
+                                            <small class="text-success d-block">
+                                                <i class="bi bi-clock"></i>
+                                                @item.DataConclusao.ToString("dd/MM HH:mm")
+                                            </small>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="bi bi-info-circle"></i> Nenhum carregamento encontrado.
+                    </div>
+                </div>
+            }
         </div>
-    </form>
+    </div>
 </div>
 
-</div>
-
-
-
-
-<!-- Tabela -->
-<table class="table table-striped table-bordered">
-    <thead class="table-dark">
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.caminhao)</th>
-            <th>@Html.DisplayNameFor(model => model.empresa)</th>
-            <th>@Html.DisplayNameFor(model => model.material)</th>
-            <th>@Html.DisplayNameFor(model => model.DataAgendamento)</th>
-            <th>@Html.DisplayNameFor(model => model.PesoCarregado)</th>
-            <th>@Html.DisplayNameFor(model => model.Status)</th>
-            <th>@Html.DisplayNameFor(model => model.DataConclusao)</th>
-            <th>@Html.DisplayNameFor(model => model.OrdemFila)</th>
-            <th>@Html.DisplayNameFor(model => model.motorista)</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.caminhao.placa)</td>
-                <td>@Html.DisplayFor(modelItem => item.empresa.nome)</td>
-                <td>@Html.DisplayFor(modelItem => item.material.nome)</td>
-                <td>@Html.DisplayFor(modelItem => item.DataAgendamento)</td>
-                <td>@Html.DisplayFor(modelItem => item.PesoCarregado)</td>
-                <td>
-                    <span class="badge @GetBadgeClass(item.Status)">
-                        @Html.DisplayFor(modelItem => item.Status)
-                    </span>
-                </td>
-                <td>@Html.DisplayFor(modelItem => item.DataConclusao)</td>
-                <td>@Html.DisplayFor(modelItem => item.OrdemFila)</td>
-                <td>@Html.DisplayFor(modelItem => item.motorista.nome)</td>
-                <td>
-
-                    <a class="btn btn-info btn-sm" asp-action="DetalhesAbastecimento" asp-route-id="@item.id">
-                        <i class="bi bi-eye"></i> Registrar Carregamento
-                    </a>
-
-
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
+<!-- Estilos CSS para a Barra de Progresso Moderna -->
 <style>
-    /* Customizando a cor de fundo do cabeçalho da tabela e o texto */
-    thead.thead-dark th {
-        background-color: #343a40; /* Preto */
-        color: white; /* Texto branco */
+    .progress-container {
+        padding: 0 10px;
+    }
+
+    .progress-bar-modern {
+        position: relative;
+    }
+
+    .progress-track {
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 20px 0 40px 0;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        border-radius: 10px;
+        transition: width 0.5s ease;
+        box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+    }
+
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin-top: -45px;
+    }
+
+    .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        flex: 1;
+    }
+
+    .step-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2em;
+        background: #e9ecef;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 8px;
+    }
+
+    .progress-step.active .step-icon {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .step-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #6c757d;
+        text-align: center;
+        transition: color 0.3s ease;
+    }
+
+    .progress-step.active .step-label {
+        color: #007bff;
+    }
+
+    .agendamento-info {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 10px;
+    }
+
+    .info-item {
+        margin-bottom: 8px;
+    }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid #e3e6f0;
+    }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        }
+
+    /* Cores específicas para cada etapa */
+    .progress-step:nth-child(1).active .step-icon {
+        background: #ffc107 !important;
+        color: #000 !important;
+    }
+
+    .progress-step:nth-child(2).active .step-icon {
+        background: #198754 !important;
+        color: #fff !important;
+    }
+
+    /* Botões específicos */
+    .btn-success {
+        background: linear-gradient(135deg, #198754, #157347);
+        border: none;
+        font-weight: 600;
+    }
+
+    .btn-info {
+        background: linear-gradient(135deg, #0dcaf0, #0aa2c0);
+        border: none;
+        font-weight: 600;
+    }
+
+    /* Responsividade */
+    @@media (max-width: 768px) {
+        .progress-steps {
+            margin-top: -40px;
+        }
+
+        .step-icon {
+            width: 35px;
+            height: 35px;
+            font-size: 1em;
+        }
+
+        .step-label {
+            font-size: 0.7rem;
+        }
+
+        .card-footer .btn {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+    }
+
+    /* Melhorias para os filtros */
+    .form-group {
+        min-width: 200px;
+    }
+
+    @@media (max-width: 576px) {
+        .form-group {
+            min-width: 100%;
+        }
+
+        .d-flex.flex-wrap {
+            flex-direction: column;
+            gap: 1rem !important;
+        }
     }
 </style>
+
+<!-- Script para melhorias visuais -->
+<script>
+    // Adiciona efeitos de hover nas cards
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
