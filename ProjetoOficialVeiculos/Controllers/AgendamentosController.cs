@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ProjetoOficialVeiculos.Controllers
 {
-    [Authorize(Roles = "Admin, Faturar")]
+    [Authorize(Roles = "Admin")]
     public class AgendamentosController : Controller
     {
         private readonly Contexto _context;

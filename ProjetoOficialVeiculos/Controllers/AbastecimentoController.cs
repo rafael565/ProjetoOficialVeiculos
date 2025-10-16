@@ -13,7 +13,8 @@ using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 
 namespace ProjetoOficialVeiculos.Controllers
 {
-    [Authorize(Roles = "Admin, Faturar")]
+    
+ 
     public class AbastecimentoController : Controller
     {
         private readonly Contexto _context;
@@ -26,7 +27,7 @@ namespace ProjetoOficialVeiculos.Controllers
         }
 
         // GET: Abastecimento
-
+        [Authorize(Roles = "Admin, faturar")]
         public async Task<IActionResult> Index(DateTime? dataAgendamento, DateTime? dataConclusao, string status, string caminhaoID)
         {
             var contexto = _context.Agendamentos
@@ -109,6 +110,7 @@ namespace ProjetoOficialVeiculos.Controllers
 
             return View(agendamento);
         }
+        [Authorize(Roles = "Admin, faturar")]
 
         // GET: Abastecimento/Create
         public IActionResult Create()
@@ -119,6 +121,7 @@ namespace ProjetoOficialVeiculos.Controllers
             ViewData["MotoristaID"] = new SelectList(_context.Motoristas, "id", "nome");
             return View();
         }
+        [Authorize(Roles = "Admin, faturar")]
 
         // POST: Abastecimento/Create
         [HttpPost]
@@ -137,7 +140,7 @@ namespace ProjetoOficialVeiculos.Controllers
             ViewData["MotoristaID"] = new SelectList(_context.Motoristas, "id", "nome", agendamento.MotoristaID);
             return View(agendamento);
         }
-
+        [Authorize(Roles = "Admin, faturar")]
         // GET: Abastecimento/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -176,7 +179,7 @@ namespace ProjetoOficialVeiculos.Controllers
 
             return View(agendamento);
         }
-
+        [Authorize(Roles = "Admin, faturar")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("id,caminhaoID,empresaID,MaterialID,DataAgendamento,PesoCarregado,Status,DataConclusao,OrdemFila,MotoristaID")] Agendamento agendamento, string novoMotoristaNome)
@@ -251,7 +254,7 @@ namespace ProjetoOficialVeiculos.Controllers
             return View(agendamento);
         }
 
-
+        [Authorize(Roles = "Admin, faturar")]
         // GET: Abastecimento/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -308,7 +311,7 @@ namespace ProjetoOficialVeiculos.Controllers
 
             return View(abastecimento);
         }
-
+        [Authorize(Roles = "Admin, faturar, carregar")]
         public async Task<IActionResult> listAbastecimento(DateTime? dataConclusao, string status)
         {
             var statusPermitidos = new[]
